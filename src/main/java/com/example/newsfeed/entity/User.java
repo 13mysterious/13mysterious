@@ -3,12 +3,12 @@ package com.example.newsfeed.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @Table(name = "user")
-public class User extends BaseEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,22 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false)
-    private Date birth;
+    private LocalDate birth;
 
     @Column(nullable = false)
     private int age;
+
+    @Column
+    private LocalDate leaveDate;
+
+    public User() {
+    }
+
+    public User(String name, String email, String password, LocalDate birth, int age) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.birth = birth;
+        this.age = age;
+    }
 }

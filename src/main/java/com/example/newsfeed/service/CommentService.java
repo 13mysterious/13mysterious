@@ -89,8 +89,8 @@ public class CommentService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
-        Comment updatedComment = findComment.updateComment(contents);
-        return new CommentResponseDto(updatedComment);
+        findComment.updateComment(contents);
+        return new CommentResponseDto(findComment);
     }
 
     /**

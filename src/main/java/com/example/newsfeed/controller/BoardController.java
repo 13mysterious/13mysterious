@@ -38,8 +38,8 @@ public class BoardController {
     @GetMapping("/{userId}")
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
             @PathVariable Long userId,
-            @PathVariable int page,
-            @PathVariable int size)
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size)
     {
         List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(userId, page, size);
 

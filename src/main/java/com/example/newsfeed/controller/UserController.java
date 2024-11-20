@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<UserSignUpResponseDto> updateUserInfo(
             @PathVariable Long userId,
             @RequestBody UserPatchInfoRequestDto requestDto,
-            @SessionAttribute(name = "userId",required = false) Long sessionId
+            @SessionAttribute(name = "userId") Long sessionId
     ){
         UserSignUpResponseDto userSignUpResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
 

@@ -1,10 +1,12 @@
 package com.example.newsfeed.service;
 
+import com.example.newsfeed.dto.UserLoginResponseDto;
 import com.example.newsfeed.dto.UserSignUpResponseDto;
 
 import java.time.LocalDate;
 
 public interface UserService {
-    UserSignUpResponseDto signUp(String email, String name, String password, LocalDate birth, int age);
+    UserSignUpResponseDto signUp(String name, String email, String password, LocalDate birth, int age);
 
+    UserLoginResponseDto login(String email, String password);
 }

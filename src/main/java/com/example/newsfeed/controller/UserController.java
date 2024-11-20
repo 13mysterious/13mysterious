@@ -23,8 +23,8 @@ public class UserController {
 
         UserSignUpResponseDto userSignUpResponseDto =
                 userService.signUp(
-                        requestDto.getEmail(),
                         requestDto.getName(),
+                        requestDto.getEmail(),
                         requestDto.getPassword(),
                         requestDto.getBirth(),
                         requestDto.getAge()

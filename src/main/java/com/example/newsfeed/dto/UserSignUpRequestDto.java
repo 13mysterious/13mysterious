@@ -7,9 +7,9 @@ import java.time.LocalDate;
 @Getter
 public class UserSignUpRequestDto {
 
-    private final String email;
-
     private final String name;
+
+    private final String email;
 
     private final String password;
 
@@ -17,9 +17,9 @@ public class UserSignUpRequestDto {
 
     private final int age;
 
-    public UserSignUpRequestDto(String email, String name, String password, LocalDate birth, int age) {
-        this.email = email;
+    public UserSignUpRequestDto(String name, String email, String password, LocalDate birth, int age) {
         this.name = name;
+        this.email = email;
         this.password = password;
         this.birth = birth;
         this.age = age;

@@ -42,4 +42,18 @@ public class User {
         this.birth = birth;
         this.age = age;
     }
+
+    public void updateUserPassword(String password){
+        this.password = password;
+    }
+
+    public void updateUserInfo(String name, LocalDate birth, int age){
+        this.name = name;
+        this.birth = birth;
+        this.age = age;
+    }
+
+    public void leaveUser(LocalDate leaveDate){
+        this.leaveDate = leaveDate;
+    }
 }

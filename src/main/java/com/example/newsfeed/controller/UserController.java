@@ -34,7 +34,7 @@ public class UserController {
     public ResponseEntity<Void> updateUserPassword(
             @PathVariable Long userId,
             @RequestBody UserPatchPasswordRequestDto requestDto,
-            @SessionAttribute(name = "userId", required = false) Long sessionId
+            @SessionAttribute(name = "userId") Long sessionId
     ){
         userService.updateUserPassword(userId, requestDto.getOldPassword(), requestDto.getNewPassword(),sessionId);
 

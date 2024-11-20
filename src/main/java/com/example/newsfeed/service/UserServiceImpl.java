@@ -80,4 +80,17 @@ public class UserServiceImpl implements UserService {
 
         return new UserSignUpResponseDto(findUser.getId(), findUser.getEmail(), findUser.getName(), findUser.getBirth(),findUser.getAge());
     }
+
+    @Transactional
+    @Override
+    public void leave(Long userId, String password) {
+        User findUser = userRepository.findById(userId).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+
+        if (!findUser.getPassword().equals(password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        findUser.leaveUser(LocalDate.now());
+    }
 }

@@ -7,8 +7,8 @@ import lombok.Getter;
 @Entity
 @Getter
 @AllArgsConstructor
-@Table(name = "like")
-public class Like {
+@Table(name = "likes")
+public class Likes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +25,11 @@ public class Like {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    public Like() {
+    public Likes() {
 
     }
 
-    public Like(boolean isLiked) {
+    public Likes(boolean isLiked) {
         this.isLiked = isLiked;
     }
 }

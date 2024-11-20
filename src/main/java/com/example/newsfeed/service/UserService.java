@@ -10,4 +10,6 @@ public interface UserService {
 
     UserLoginResponseDto login(String email, String password);
     void updateUserPassword(Long userId, String oldPassword, String newPassword, Long sessionId);
+
+    UserSignUpResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId);
 }

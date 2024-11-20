@@ -1,10 +1,12 @@
 package com.example.newsfeed.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.sql.Date;
 
 @Entity
+@Getter
 @Table(name = "user")
 public class User extends BaseEntity {
 

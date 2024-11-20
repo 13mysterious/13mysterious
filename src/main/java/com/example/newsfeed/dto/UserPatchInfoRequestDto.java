@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 @Getter
 public class UserPatchInfoRequestDto {
-    private String name;
+    private final String name;
 
     private final LocalDate birth;
 

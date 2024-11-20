@@ -38,6 +38,12 @@ public class Friend {
 
     }
 
+    public Friend(boolean isAccepted, User toUser, User fromUser) {
+        this.isAccepted = isAccepted;
+        this.toUser = toUser;
+        this.fromUser = fromUser;
+    }
+
     public void changeIsAccepted(boolean status) {
         isAccepted = status;
     }

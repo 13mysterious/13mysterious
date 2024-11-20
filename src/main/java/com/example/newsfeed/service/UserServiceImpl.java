@@ -7,6 +7,7 @@ import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -44,5 +45,22 @@ public class UserServiceImpl implements UserService {
         }
 
         return new UserLoginResponseDto(findUser.get().getId(), findUser.get().getEmail());
+      
+    @Transactional
+    @Override
+    public void updateUserPassword(Long userId, String oldPassword, String newPassword, Long sessionId) {
+        User findUser = userRepository.findById(userId).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+
+        if(userId != sessionId){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"잘못된 접근입니다.");
+        }
+
+        if(!findUser.getPassword().equals(oldPassword)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"비밀 번호가 일치하지 않습니다.");
+        }
+
+        findUser.updateUserPassword(newPassword);
+
     }
 }

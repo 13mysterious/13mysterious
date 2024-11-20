@@ -45,7 +45,9 @@ public class UserServiceImpl implements UserService {
         }
 
         return new UserLoginResponseDto(findUser.get().getId(), findUser.get().getEmail());
-      
+
+    }
+    
     @Transactional
     @Override
     public void updateUserPassword(Long userId, String oldPassword, String newPassword, Long sessionId) {

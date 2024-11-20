@@ -25,9 +25,11 @@ public class LoginController {
 
         UserLoginResponseDto responseDto = userService.login(requestDto.getEmail(), requestDto.getPassword());
 
+        Long userId = responseDto.getId();
+
         HttpSession session = request.getSession();
 
-        session.setAttribute("userId", responseDto);
+        session.setAttribute("userId", userId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }

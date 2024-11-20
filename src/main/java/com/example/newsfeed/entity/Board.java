@@ -3,19 +3,18 @@ package com.example.newsfeed.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.catalina.User;
 
 @Entity
 @Getter
 @AllArgsConstructor
-@Table(name = 'board')
+@Table(name = "board")
 public class Board extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = " user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
 

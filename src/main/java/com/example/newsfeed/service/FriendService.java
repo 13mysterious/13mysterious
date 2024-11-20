@@ -36,7 +36,7 @@ public class FriendService {
      * @param toUserId 친구 신청을 받는 유저 식별자
      * @param fromUserId 친구 신청을 보내는 유저 식별자
      */
-    public void requestFriend(Long toUserId, Long fromUserId) {
+    public void createFriendRequest(Long toUserId, Long fromUserId) {
 
         User findToUser = userRepository.findById(toUserId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND)

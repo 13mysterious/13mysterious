@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AutoCloseable.class)
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false)

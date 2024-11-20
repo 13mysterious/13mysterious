@@ -1,5 +1,6 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.dto.UserPatchInfoRequestDto;
 import com.example.newsfeed.dto.UserPatchPasswordRequestDto;
 import com.example.newsfeed.dto.UserSignUpRequestDto;
 import com.example.newsfeed.dto.UserSignUpResponseDto;
@@ -39,5 +40,16 @@ public class UserController {
         userService.updateUserPassword(userId, requestDto.getOldPassword(), requestDto.getNewPassword(),sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<UserSignUpResponseDto> updateUserInfo(
+            @PathVariable Long userId,
+            @RequestBody UserPatchInfoRequestDto requestDto,
+            @SessionAttribute(name = "userId") Long sessionId
+    ){
+        UserSignUpResponseDto userSignUpResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
+
+        return new ResponseEntity<>(userSignUpResponseDto,HttpStatus.OK);
     }
 }

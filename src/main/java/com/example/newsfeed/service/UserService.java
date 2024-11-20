@@ -14,4 +14,6 @@ public interface UserService {
     UserSignUpResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId);
 
     void leave(Long userId, String password);
+
+    UserSignUpResponseDto findUserInfo(Long userId);
 }

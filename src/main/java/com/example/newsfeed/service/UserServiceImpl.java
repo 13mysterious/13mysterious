@@ -93,4 +93,13 @@ public class UserServiceImpl implements UserService {
 
         findUser.leaveUser(LocalDate.now());
     }
+
+    @Override
+    public UserSignUpResponseDto findUserInfo(Long userId) {
+
+        User findUser = userRepository.findById(userId).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+
+        return new UserSignUpResponseDto(findUser.getId(), findUser.getName(), findUser.getEmail(), findUser.getBirth(), findUser.getAge());
+    }
 }

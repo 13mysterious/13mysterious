@@ -32,7 +32,7 @@ public class Board extends BaseEntity{
 
     }
 
-    public Board(User user, String title, String contents, Integer likeCount) {
+    public Board(User user, String title, String contents, int likeCount) {
         this.user = user;
         this.title = title;
         this.contents = contents;

@@ -6,7 +6,7 @@ import java.sql.Date;
 
 @Entity
 @Table(name = "user")
-public class UserEntity extends BaseEntity {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

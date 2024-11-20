@@ -52,4 +52,8 @@ public class User {
         this.birth = birth;
         this.age = age;
     }
+
+    public void leaveUser(LocalDate leaveDate){
+        this.leaveDate = leaveDate;
+    }
 }

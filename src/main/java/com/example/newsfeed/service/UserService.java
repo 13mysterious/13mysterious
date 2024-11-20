@@ -12,4 +12,6 @@ public interface UserService {
     void updateUserPassword(Long userId, String oldPassword, String newPassword, Long sessionId);
 
     UserSignUpResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId);
+
+    void leave(Long userId, String password);
 }

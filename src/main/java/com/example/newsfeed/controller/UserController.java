@@ -1,9 +1,6 @@
 package com.example.newsfeed.controller;
 
-import com.example.newsfeed.dto.UserPatchInfoRequestDto;
-import com.example.newsfeed.dto.UserPatchPasswordRequestDto;
-import com.example.newsfeed.dto.UserSignUpRequestDto;
-import com.example.newsfeed.dto.UserSignUpResponseDto;
+import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,5 +48,15 @@ public class UserController {
         UserSignUpResponseDto userSignUpResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
 
         return new ResponseEntity<>(userSignUpResponseDto,HttpStatus.OK);
+    }
+
+    @PatchMapping("/{userId}/leave")
+    public ResponseEntity<UserSignUpResponseDto> leaveUserInfo(
+            @PathVariable Long userId,
+            @RequestBody UserLeaveRequestDto requestDto
+    ) {
+        userService.leave(userId, requestDto.getPassword());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

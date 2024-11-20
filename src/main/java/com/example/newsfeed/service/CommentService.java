@@ -70,4 +70,21 @@ public class CommentService {
         Comment updatedComment = findComment.updateComment(contents);
         return new CommentResponseDto(updatedComment);
     }
+
+    public void deleteComment(Long commentId, Long boardId, Long loginUserId) {
+
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        // 로그인한 사람이 댓글 작성자도, 게시글 작성자도 아닐 때
+        if(!loginUserId.equals(findComment.getUser().getId()) && !loginUserId.equals(findBoard.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        commentRepository.delete(findComment);
+    }
 }

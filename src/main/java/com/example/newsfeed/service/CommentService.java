@@ -22,7 +22,7 @@ import java.util.List;
  * <li>packageName    : com.example.newsfeed.service
  * <li>fileName       : CommentService
  * <li>date           : 24. 11. 20.
- * <li>description    :
+ * <li>description    : 댓글 기능 서비스
  * </ul>
  */
 
@@ -34,6 +34,14 @@ public class CommentService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
 
+    /**
+     * 댓글 작성
+     *
+     * @param boardId 게시글 식별자
+     * @param userId 댓글 작성자 식별자
+     * @param contents 내용
+     * @return 작성된 댓글과 id dto
+     */
     public CommentResponseDto createComment(Long boardId, Long userId, String contents) {
 
         Board findBoard = boardRepository.findById(boardId).orElseThrow(
@@ -49,6 +57,13 @@ public class CommentService {
         return new CommentResponseDto(comment.getId(), comment.getUser().getName(), contents);
     }
 
+    /**
+     * 게시글별 페이징된 댓글 조회
+     *
+     * @param boardId 게시글 식별자
+     * @param pageable 페이징 객체
+     * @return 페이징된 댓글 목록
+     */
     public List<CommentResponseDto> findAllCommentsByPage(Long boardId, Pageable pageable) {
 
         Board findBoard = boardRepository.findById(boardId).orElseThrow(
@@ -60,6 +75,13 @@ public class CommentService {
         return allComments.stream().map(CommentResponseDto::new).toList();
     }
 
+    /**
+     * 댓글 수정
+     *
+     * @param id 댓글 식별자
+     * @param contents 수정할 내용
+     * @return 수정된 댓글
+     */
     @Transactional
     public CommentResponseDto updateComment(Long id, String contents) {
 
@@ -71,6 +93,13 @@ public class CommentService {
         return new CommentResponseDto(updatedComment);
     }
 
+    /**
+     * 댓글 삭제
+     *
+     * @param commentId 댓글 식별자
+     * @param boardId 게시글 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     */
     public void deleteComment(Long commentId, Long boardId, Long loginUserId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(

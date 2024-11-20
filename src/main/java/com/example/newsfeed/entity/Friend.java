@@ -1,6 +1,7 @@
 package com.example.newsfeed.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -14,6 +15,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
+@AllArgsConstructor
 @Table(name = "friend")
 public class Friend {
 
@@ -31,4 +33,13 @@ public class Friend {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_user_id")
     private User fromUser;
+
+    public Friend() {
+
+    }
+
+    public void changeIsAccepted(boolean status) {
+        isAccepted = status;
+    }
+
 }

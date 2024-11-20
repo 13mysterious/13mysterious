@@ -59,8 +59,8 @@ public class CommentController {
     @GetMapping
     public ResponseEntity<List<CommentResponseDto>> findAllCommentsByPage(
             @PathVariable Long boardId,
-            @RequestParam int page,
-            @RequestParam int size
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
 
         Pageable pageable = PageRequest.of(page, size);

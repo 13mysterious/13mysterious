@@ -1,8 +1,13 @@
 package com.example.newsfeed.controller;
 
 import com.example.newsfeed.dto.UserLoginRequestDto;
+import com.example.newsfeed.dto.UserLoginResponseDto;
 import com.example.newsfeed.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,9 +21,14 @@ public class LoginController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public String login(@RequestBody UserLoginRequestDto requestDto) {
+    public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto requestDto, HttpServletRequest request) {
 
+        UserLoginResponseDto responseDto = userService.login(requestDto.getEmail(), requestDto.getPassword());
 
-        return null;
+        HttpSession session = request.getSession();
+
+        session.setAttribute("userId", responseDto);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

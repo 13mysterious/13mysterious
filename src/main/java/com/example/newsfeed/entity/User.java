@@ -42,4 +42,8 @@ public class User {
         this.birth = birth;
         this.age = age;
     }
+
+    public void updateUserPassword(String password){
+        this.password = password;
+    }
 }

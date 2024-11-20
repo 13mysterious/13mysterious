@@ -7,4 +7,5 @@ import java.time.LocalDate;
 public interface UserService {
     UserSignUpResponseDto signUp(String email, String name, String password, LocalDate birth, int age);
 
+    void updateUserPassword(Long userId, String oldPassword, String newPassword, Long sessionId);
 }

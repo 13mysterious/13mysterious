@@ -59,4 +59,13 @@ public class UserController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserSignUpResponseDto> getUserInfo(
+            @PathVariable Long userId
+    ) {
+        UserSignUpResponseDto userSignUpResponseDto = userService.findUserInfo(userId);
+
+        return new ResponseEntity<>(userSignUpResponseDto, HttpStatus.OK);
+    }
 }

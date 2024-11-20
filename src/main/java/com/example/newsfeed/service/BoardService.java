@@ -1,5 +1,6 @@
 package com.example.newsfeed.service;
 
+import com.example.newsfeed.dto.BoardCreateResponseDto;
 import com.example.newsfeed.dto.BoardResponseDto;
 import com.example.newsfeed.entity.Board;
 import com.example.newsfeed.entity.User;
@@ -9,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,24 +25,21 @@ public class BoardService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
 
-    public BoardResponseDto save(String title, String contents, @SessionAttribute(name ="userId") Long userId) {
+    public BoardCreateResponseDto save(String title, String contents, @SessionAttribute(name ="userId") Long userId) {
 
         User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
         Board board = new Board(findUser, title, contents, 0);
 
         //게시물 저장
         boardRepository.save(board);
 
-        return new BoardResponseDto(
+        return new BoardCreateResponseDto(
                 board.getId(),
                 board.getTitle(),
-                board.getContents(),
-                findUser.getName(),
-                board.getLikeCount(),
-                board.getCreatedAt(),
-                board.getModifiedAt());
+                board.getContents()
+        );
     }
     //게시물 목록 조회
     public List<BoardResponseDto> findAllBoards(Long userId, int page, int size) {

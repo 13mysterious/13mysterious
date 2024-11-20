@@ -1,6 +1,7 @@
 package com.example.newsfeed.controller;
 
 
+import com.example.newsfeed.dto.BoardCreateResponseDto;
 import com.example.newsfeed.dto.BoardResponseDto;
 import com.example.newsfeed.dto.CreateBoardRequestDto;
 import com.example.newsfeed.service.BoardService;
@@ -20,26 +21,26 @@ public class BoardController {
 
     //게시물 저장
     @PostMapping
-    public ResponseEntity<BoardResponseDto> save(
+    public ResponseEntity<BoardCreateResponseDto> save(
             @RequestBody CreateBoardRequestDto requestDto,
             @SessionAttribute(name ="userId") Long userId) {
 
-        BoardResponseDto boardResponseDto =
+        BoardCreateResponseDto boardCreateResponseDto =
                 boardService.save(
                         requestDto.getTitle(),
                         requestDto.getContents(),
                         userId
                 );
-        return new ResponseEntity<>(boardResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(boardCreateResponseDto, HttpStatus.CREATED);
     }
 
     //게시물 목록 조회
-    @GetMapping("/{uerId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
-            @RequestParam Long userId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "4") int size) {
-
+            @PathVariable Long userId,
+            @PathVariable int page,
+            @PathVariable int size)
+    {
         List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(userId, page, size);
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);

@@ -26,7 +26,7 @@ public class Board extends BaseEntity{
     private String contents;
 
     @Column(nullable = false)
-    private Integer likeCount;
+    private int likeCount;
 
     public Board() {
 

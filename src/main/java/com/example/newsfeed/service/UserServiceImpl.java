@@ -65,4 +65,19 @@ public class UserServiceImpl implements UserService {
         findUser.updateUserPassword(newPassword);
 
     }
+
+    @Transactional
+    @Override
+    public UserSignUpResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId) {
+        User findUser = userRepository.findById(userId).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+
+        if(userId != sessionId){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"잘못된 접근입니다.");
+        }
+
+        findUser.updateUserInfo(name,birth,age);
+
+        return new UserSignUpResponseDto(findUser.getId(), findUser.getEmail(), findUser.getName(), findUser.getBirth(),findUser.getAge());
+    }
 }

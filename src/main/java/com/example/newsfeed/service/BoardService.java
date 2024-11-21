@@ -2,6 +2,7 @@ package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.BoardCreateResponseDto;
 import com.example.newsfeed.dto.BoardResponseDto;
+import com.example.newsfeed.dto.BoardUpdateResponseDto;
 import com.example.newsfeed.entity.Board;
 import com.example.newsfeed.entity.Likes;
 import com.example.newsfeed.entity.User;
@@ -14,12 +15,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -169,6 +172,21 @@ public class BoardService {
             currentBoard.changeIsLiked();
             likesRepository.save(currentBoard);
         }
+    }
+
+    @Transactional
+    public BoardUpdateResponseDto updateBoard(Long boardId, String title, String contents, Long loginUserId) {
+
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        if(!loginUserId.equals(findBoard.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        findBoard.update(title, contents);
+        return new BoardUpdateResponseDto(findBoard);
     }
 
 }

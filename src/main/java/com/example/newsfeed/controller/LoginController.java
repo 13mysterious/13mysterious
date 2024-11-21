@@ -20,6 +20,13 @@ public class LoginController {
 
     private final UserService userService;
 
+    /**
+     * 로그인 메서드
+     *
+     * @param requestDto 로그인에 필요한 유저 정보
+     * @param request    유저 정보를 저장할 객체
+     * @return 로그인 성공한 유저 정보
+     */
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto requestDto, HttpServletRequest request) {
 
@@ -34,6 +41,12 @@ public class LoginController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    /**
+     * 로그아웃 메서드
+     *
+     * @param request 유저 정보가 저장된 객체
+     * @return 200
+     */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
 

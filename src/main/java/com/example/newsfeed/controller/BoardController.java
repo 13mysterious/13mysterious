@@ -46,10 +46,10 @@ public class BoardController {
     //친구 게시물 조회
     @GetMapping("/friends")
     public ResponseEntity<List<BoardResponseDto>> findAllFriendsBoards(
-            @RequestParam Long fromUserId,
+            @SessionAttribute(name = "userId") Long userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(fromUserId, page, size);
+        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(userId, page, size);
 
         return new ResponseEntity<>(allFriendsBoards, HttpStatus.OK);
     }

@@ -78,7 +78,12 @@ public class BoardController {
     }
 
 
-    //게시글 단건 조회
+    /**
+     * 게시글 단건 조회
+     *
+     * @param boardId 게시글 식별자
+     * @return 게시글 내용과 댓글 내용
+     */
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardFindResponseDto> findBoardById(@PathVariable Long boardId) {
 
@@ -93,7 +98,7 @@ public class BoardController {
      *
      * @param boardId     게시글 식별자
      * @param loginUserId 로그인 식별자
-     * @return
+     * @return 200
      */
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> deleteBoard(

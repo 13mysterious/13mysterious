@@ -47,19 +47,19 @@ public class UserServiceImpl implements UserService {
         return new UserLoginResponseDto(findUser.get().getId(), findUser.get().getEmail());
 
     }
-    
+
     @Transactional
     @Override
     public void updateUserPassword(Long userId, String oldPassword, String newPassword, Long sessionId) {
-        User findUser = userRepository.findById(userId).orElseThrow(()->
-                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+        User findUser = userRepository.findById(userId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
 
-        if(userId != sessionId){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"잘못된 접근입니다.");
+        if (userId != sessionId) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 접근입니다.");
         }
 
-        if(!findUser.getPassword().equals(oldPassword)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"비밀 번호가 일치하지 않습니다.");
+        if (!findUser.getPassword().equals(oldPassword)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀 번호가 일치하지 않습니다.");
         }
 
         findUser.updateUserPassword(newPassword);
@@ -69,23 +69,29 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserSignUpResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId) {
-        User findUser = userRepository.findById(userId).orElseThrow(()->
-                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+        User findUser = userRepository.findById(userId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
 
-        if(userId != sessionId){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"잘못된 접근입니다.");
+        if (userId != sessionId) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 접근입니다.");
         }
 
-        findUser.updateUserInfo(name,birth,age);
+        findUser.updateUserInfo(name, birth, age);
 
-        return new UserSignUpResponseDto(findUser.getId(), findUser.getEmail(), findUser.getName(), findUser.getBirth(),findUser.getAge());
+        return new UserSignUpResponseDto(
+                findUser.getId(),
+                findUser.getEmail(),
+                findUser.getName(),
+                findUser.getBirth(),
+                findUser.getAge()
+        );
     }
 
     @Transactional
     @Override
     public void leave(Long userId, String password) {
-        User findUser = userRepository.findById(userId).orElseThrow(()->
-                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+        User findUser = userRepository.findById(userId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
 
         if (!findUser.getPassword().equals(password)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -97,9 +103,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserSignUpResponseDto findUserInfo(Long userId) {
 
-        User findUser = userRepository.findById(userId).orElseThrow(()->
-                new ResponseStatusException(HttpStatus.NOT_FOUND,"유저를 찾지 못했습니다."));
+        User findUser = userRepository.findById(userId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
 
-        return new UserSignUpResponseDto(findUser.getId(), findUser.getName(), findUser.getEmail(), findUser.getBirth(), findUser.getAge());
+        return new UserSignUpResponseDto(
+                findUser.getId(),
+                findUser.getName(),
+                findUser.getEmail(),
+                findUser.getBirth(),
+                findUser.getAge()
+        );
     }
 }

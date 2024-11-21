@@ -10,13 +10,20 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
-//필터 구현체
 public class LoginFilter implements Filter {
 
-    //화이트 리스트
+    /**
+     * 로그인 필터 화이트리스트
+     */
     private static final String[] WHITE_LIST = {"/", "/api/users/signup", "/api/users/login"};
 
-    //doFilter 메서드
+    /**
+     * @param request  유저 정보가 담겨 있는 객체
+     * @param response
+     * @param chain
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
@@ -38,6 +45,10 @@ public class LoginFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    /**
+     * @param requestURI 검사할 URL
+     * @return
+     */
     private boolean isWhiteList(String requestURI) {
         return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
     }

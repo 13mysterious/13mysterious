@@ -11,6 +11,7 @@ import com.example.newsfeed.repository.CommentRepository;
 import com.example.newsfeed.repository.LikesRepository;
 import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.Lint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,10 +56,10 @@ public class BoardService {
     }
 
     //게시물 목록 조회
-    public List<BoardResponseDto> findAllBoards(Long userId, int page, int size) {
+    public List<BoardResponseDto> findAllBoards(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
-        Page<Board> boardPage = boardRepository.findAllByUserId(userId, pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+        Page<Board> boardPage = boardRepository.findAll(pageable);
 
         return boardPage.stream()
                 .map(board -> new BoardResponseDto(
@@ -219,7 +220,7 @@ public class BoardService {
         //주어진 userId를 통해 친구 목록을 가져옴
         List<Long> friendIds = friendRepository.findByFromUser_Id(UserId);
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Board> friendBoardPage = boardRepository.findAllByUserIdIn(friendIds, pageable);
 
         return friendBoardPage.stream()

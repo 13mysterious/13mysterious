@@ -35,10 +35,9 @@ public class BoardController {
     //게시물 목록 조회
     @GetMapping
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
-            @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(userId, page, size);
+        List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(page, size);
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
     }

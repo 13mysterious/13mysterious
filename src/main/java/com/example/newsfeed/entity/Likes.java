@@ -29,7 +29,16 @@ public class Likes {
 
     }
 
-    public Likes(boolean isLiked) {
+    public Likes(User user, Board board){
+        this.user = user;
+        this.board = board;
+    }
+
+    public void setLiked(boolean isLiked){
         this.isLiked = isLiked;
+    }
+
+    public void changeIsLiked(){
+        this.isLiked = !this.isLiked;
     }
 }

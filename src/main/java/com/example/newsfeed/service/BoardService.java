@@ -9,6 +9,7 @@ import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,6 +33,7 @@ public class BoardService {
         return new BoardResponseDto(board.getId(),board.getTitle(), board.getContents());
     }
 
+    @Transactional
     public BoardUpdateResponseDto updateBoard(Long boardId, String title, String contents, Long loginUserId) {
 
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->

@@ -3,6 +3,8 @@ package com.example.newsfeed.controller;
 
 import com.example.newsfeed.dto.BoardCreateResponseDto;
 import com.example.newsfeed.dto.BoardResponseDto;
+import com.example.newsfeed.dto.BoardUpdateRequestDto;
+import com.example.newsfeed.dto.BoardUpdateResponseDto;
 import com.example.newsfeed.dto.CreateBoardRequestDto;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -45,4 +47,16 @@ public class BoardController {
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
     }
+    // 게시물 수정
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<BoardUpdateResponseDto> updateBoard(
+            @PathVariable Long boardId,
+            @RequestBody BoardUpdateRequestDto dto,
+            @SessionAttribute(name = "userId") Long loginUserId
+    ) {
+
+        BoardUpdateResponseDto boardUpdateResponseDto = boardService.updateBoard(boardId, dto.getTitle(), dto.getContents(), loginUserId);
+        return new ResponseEntity<>(boardUpdateResponseDto, HttpStatus.OK);
+    }
 }
+

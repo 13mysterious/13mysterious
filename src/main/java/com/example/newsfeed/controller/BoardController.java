@@ -47,6 +47,27 @@ public class BoardController {
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
     }
+
+    @PostMapping("/{boardId}/likes")
+    public ResponseEntity<Void> sendLikes(
+            @PathVariable Long boardId,
+            @SessionAttribute(name = "userId") Long sessionId
+    ){
+        boardService.sendLikes(boardId, sessionId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/{boardId}/likes")
+    public ResponseEntity<Void> sendLikesToggles(
+            @PathVariable Long boardId,
+            @SessionAttribute(name = "userId") Long sessionId
+    ){
+        boardService.sendLikesToggles(boardId, sessionId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     // 게시물 수정
     @PatchMapping("/{boardId}")
     public ResponseEntity<BoardUpdateResponseDto> updateBoard(
@@ -59,4 +80,5 @@ public class BoardController {
         return new ResponseEntity<>(boardUpdateResponseDto, HttpStatus.OK);
     }
 }
+
 

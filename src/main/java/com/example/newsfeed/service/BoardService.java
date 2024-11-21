@@ -183,5 +183,24 @@ public class BoardService {
                 findBoard.getCreatedAt(),
                 findBoard.getModifiedAt()
         );
+
+    /**
+     * 게시글 삭제 메서드
+     * @param boardId 게시글 식별자
+     * @param loginUserId 로그인 식별자
+     */
+    public void deleteBoard(Long boardId, Long loginUserId) {
+        // 삭제할 게시글 조회
+        Board findBoard = boardRepository.findById(boardId)
+                .orElseThrow(()->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        // 본인 글이 아닌 게시글을 삭제하려고 하는 경우
+        if(loginUserId != findBoard.getUser().getId()){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        boardRepository.deleteById(boardId);
+
     }
 }

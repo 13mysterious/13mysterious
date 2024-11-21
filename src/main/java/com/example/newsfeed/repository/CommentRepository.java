@@ -3,7 +3,6 @@ package com.example.newsfeed.repository;
 import com.example.newsfeed.entity.Board;
 import com.example.newsfeed.entity.Comment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -27,4 +26,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @return 기준과 일치하고, 정렬 및 페이징된 Comment 목록
      */
     List<Comment> findByBoardOrderByModifiedAtDesc(Board board, Pageable pageable);
+    List<Comment> findByBoard(Board board);
 }

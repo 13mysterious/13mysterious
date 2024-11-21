@@ -97,4 +97,42 @@ public class CommentController {
         commentService.deleteComment(commentId, boardId, loginUserId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * 댓글 좋아요 추가
+     *
+     * @param boardId     게시글 식별자, 계층 표현용
+     * @param commentId   댓글 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     */
+    @PostMapping("/{commentId}/likes")
+    public ResponseEntity<Void> createLike(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId,
+            @SessionAttribute(name = "userId") Long loginUserId
+    ) {
+
+        int likeCountChanged = commentService.createLike(commentId, loginUserId);
+        commentService.updateLikeCount(commentId, likeCountChanged);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    /**
+     * 댓글 좋아요 취소
+     *
+     * @param boardId     게시글 식별자, 계층 표현용
+     * @param commentId   댓글 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     */
+    @DeleteMapping("/{commentId}/likes")
+    public ResponseEntity<Void> deleteLike(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId,
+            @SessionAttribute(name = "userId") Long loginUserId
+    ) {
+
+        int likeCountChanged = commentService.deleteLike(commentId, loginUserId);
+        commentService.updateLikeCount(commentId, likeCountChanged);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

@@ -1,10 +1,9 @@
 package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.CommentResponseDto;
-import com.example.newsfeed.entity.Board;
-import com.example.newsfeed.entity.Comment;
-import com.example.newsfeed.entity.User;
+import com.example.newsfeed.entity.*;
 import com.example.newsfeed.repository.BoardRepository;
+import com.example.newsfeed.repository.CommentLikesRepository;
 import com.example.newsfeed.repository.CommentRepository;
 import com.example.newsfeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -24,6 +23,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final CommentLikesRepository commentLikesRepository;
 
     /**
      * 댓글 작성
@@ -106,5 +106,79 @@ public class CommentService {
         }
 
         commentRepository.delete(findComment);
+    }
+
+    /**
+     * 댓글 좋아요 생성
+     *
+     * @param commentId   댓글 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     * @return 1, 좋아요 수 1 증가
+     */
+    @Transactional
+    public int createLike(Long commentId, Long loginUserId) {
+
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        User findUser = userRepository.findById(loginUserId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        // 이미 좋아요가 눌려있다면 예외 발생
+        boolean isLikePresent = commentLikesRepository.findById(new CommentLikesPK(findComment, findUser)).isPresent();
+        if (findComment.getUser().equals(findUser) || isLikePresent) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        CommentLikes like = new CommentLikes(new CommentLikesPK(findComment, findUser));
+        commentLikesRepository.save(like);
+
+        return 1;
+    }
+
+    /**
+     * 좋아요 취소(삭제)
+     *
+     * @param commentId   댓글 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     * @return -1, 좋아요 수 1 차감
+     */
+    @Transactional
+    public int deleteLike(Long commentId, Long loginUserId) {
+
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        User findUser = userRepository.findById(loginUserId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        CommentLikes findLike = commentLikesRepository.findById(new CommentLikesPK(findComment, findUser)).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        commentLikesRepository.delete(findLike);
+
+        return -1;
+    }
+
+    /**
+     * 좋아요 개수 갱신
+     *
+     * @param commentId        댓글 식별자
+     * @param likeCountChanged 좋아요 개수 변경값
+     */
+    @Transactional
+    public void updateLikeCount(Long commentId, int likeCountChanged) {
+
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        findComment.updateLikeCount(likeCountChanged);
+        commentRepository.save(findComment);
     }
 }

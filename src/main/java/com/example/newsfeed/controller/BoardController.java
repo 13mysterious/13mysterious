@@ -1,4 +1,5 @@
 package com.example.newsfeed.controller;
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<BoardResponseDto> createBoard(
             @RequestBody BoardCreateRequestDto requestDto,
-            @SessionAttribute(name = "userId") Long sessionId) {
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId) {
 
         //게시물 저장
         BoardResponseDto boardResponseDto =
@@ -45,7 +46,7 @@ public class BoardController {
     //친구 게시물 조회
     @GetMapping("/friends")
     public ResponseEntity<List<BoardResponseDto>> findAllFriendsBoards(
-            @SessionAttribute(name = "userId") Long sessionId,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(sessionId, page, size);
@@ -57,12 +58,11 @@ public class BoardController {
      * 좋아요 API
      * @param boardId 게시글 식별자
      * @param sessionId 로그인 식별자
-     * @return
      */
     @PostMapping("/{boardId}/likes")
     public ResponseEntity<Void> createLikes(
             @PathVariable Long boardId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
         boardService.createLikes(boardId, sessionId);
 
@@ -78,7 +78,7 @@ public class BoardController {
     @DeleteMapping("/{boardId}/likes")
     public ResponseEntity<Void> deleteLikes(
             @PathVariable Long boardId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
         boardService.deleteLikes(boardId, sessionId);
 
@@ -90,7 +90,7 @@ public class BoardController {
     public ResponseEntity<BoardUpdateResponseDto> updateBoard(
             @PathVariable Long boardId,
             @RequestBody BoardUpdateRequestDto dto,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
         BoardUpdateResponseDto boardUpdateResponseDto = boardService.updateBoard(boardId, dto.getTitle(), dto.getContents(), sessionId);
@@ -123,7 +123,7 @@ public class BoardController {
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> deleteBoard(
             @PathVariable Long boardId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
         boardService.deleteBoard(boardId, sessionId);
         return new ResponseEntity<>(HttpStatus.OK);

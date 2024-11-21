@@ -1,5 +1,6 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.CommentRequestDto;
 import com.example.newsfeed.dto.CommentResponseDto;
 import com.example.newsfeed.service.CommentService;
@@ -32,7 +33,7 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> createComment(
             @PathVariable Long boardId,
             @RequestBody CommentRequestDto dto,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
         CommentResponseDto commentResponseDto = commentService.createComment(boardId, sessionId, dto.getContents());
@@ -91,7 +92,7 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
         commentService.deleteComment(commentId, boardId, sessionId);
@@ -109,7 +110,7 @@ public class CommentController {
     public ResponseEntity<Void> createLike(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
         int likeCountChanged = commentService.createLike(commentId, sessionId);
@@ -128,7 +129,7 @@ public class CommentController {
     public ResponseEntity<Void> deleteLike(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long loginUserId
     ) {
 
         int likeCountChanged = commentService.deleteLike(commentId, loginUserId);

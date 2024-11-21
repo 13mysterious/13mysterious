@@ -1,5 +1,6 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.FriendResponseDto;
 import com.example.newsfeed.service.FriendService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class FriendController {
     @PostMapping
     public ResponseEntity<Void> createFriendRequest(
             @PathVariable Long userId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
         friendService.createFriendRequest(userId, sessionId);
@@ -62,7 +63,7 @@ public class FriendController {
     public ResponseEntity<Void> acceptFriend(
             @PathVariable Long userId,
             @PathVariable Long friendId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
         friendService.acceptFriend(friendId, userId, sessionId);
@@ -81,7 +82,7 @@ public class FriendController {
     public ResponseEntity<Void> deleteFriend(
             @PathVariable Long userId,
             @PathVariable Long friendId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
         friendService.deleteFriend(friendId, userId, sessionId);

@@ -1,5 +1,6 @@
 package com.example.newsfeed.filter;
 
+import com.example.newsfeed.config.Const;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +38,7 @@ public class LoginFilter implements Filter {
 
             HttpSession session = httpRequest.getSession(false);
 
-            if (session == null || session.getAttribute("userId") == null) {
+            if (session == null || session.getAttribute(Const.SESSION_KEY) == null) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
             }
         }

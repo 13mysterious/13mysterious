@@ -1,12 +1,13 @@
 package com.example.newsfeed.repository;
 
-import com.example.newsfeed.entity.Likes;
+import com.example.newsfeed.entity.Board;
+import com.example.newsfeed.entity.BoardLikePK;
+import com.example.newsfeed.entity.BoardLikes;
+import com.example.newsfeed.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface LikesRepository extends JpaRepository<Likes, Long> {
-    Optional<Likes> findLikesByUserId(Long userId);
-    Optional<Likes> findByUserIdAndBoardId(Long sessionId, Long boardId);
+public interface LikesRepository extends JpaRepository<BoardLikes, BoardLikePK> {
+    Optional<BoardLikes> findByBoardLikePK_UserAndBoardLikePK_Board(User findLoginUser, Board findBoard);
 }

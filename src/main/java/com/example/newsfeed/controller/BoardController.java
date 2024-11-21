@@ -53,7 +53,13 @@ public class BoardController {
 
         return new ResponseEntity<>(allFriendsBoards, HttpStatus.OK);
     }
-  
+
+    /**
+     * 좋아요 API
+     * @param boardId 게시글 식별자
+     * @param sessionId 로그인 식별자
+     * @return
+     */
     @PostMapping("/{boardId}/likes")
     public ResponseEntity<Void> sendLikes(
             @PathVariable Long boardId,
@@ -64,12 +70,18 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/{boardId}/likes")
-    public ResponseEntity<Void> sendLikesToggles(
+    /**
+     * 좋아요 취소 API
+     * @param boardId 게시글 섹별자
+     * @param sessionId 로그인 식별자
+     * @return
+     */
+    @DeleteMapping("/{boardId}/likes")
+    public ResponseEntity<Void> sendUnlikes(
             @PathVariable Long boardId,
             @SessionAttribute(name = "userId") Long sessionId
     ) {
-        boardService.sendLikesToggles(boardId, sessionId);
+        boardService.sendUnlikes(boardId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

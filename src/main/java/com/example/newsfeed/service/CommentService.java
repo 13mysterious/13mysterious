@@ -10,18 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-
 import java.util.List;
 import java.util.Optional;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.service
- * <li>fileName       : CommentService
- * <li>date           : 24. 11. 20.
- * <li>description    : 댓글 기능 서비스
- * </ul>
- */
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +26,8 @@ public class CommentService {
     /**
      * 댓글 작성
      *
-     * @param boardId 게시글 식별자
-     * @param userId 댓글 작성자 식별자
+     * @param boardId  게시글 식별자
+     * @param userId   댓글 작성자 식별자
      * @param contents 내용
      * @return 작성된 댓글과 id dto
      */
@@ -58,7 +49,7 @@ public class CommentService {
     /**
      * 게시글별 페이징된 댓글 조회
      *
-     * @param boardId 게시글 식별자
+     * @param boardId  게시글 식별자
      * @param pageable 페이징 객체
      * @return 페이징된 댓글 목록
      */
@@ -76,7 +67,7 @@ public class CommentService {
     /**
      * 댓글 수정
      *
-     * @param id 댓글 식별자
+     * @param id       댓글 식별자
      * @param contents 수정할 내용
      * @return 수정된 댓글
      */
@@ -94,8 +85,8 @@ public class CommentService {
     /**
      * 댓글 삭제
      *
-     * @param commentId 댓글 식별자
-     * @param boardId 게시글 식별자
+     * @param commentId   댓글 식별자
+     * @param boardId     게시글 식별자
      * @param loginUserId 현재 로그인한 유저 식별자
      */
     public void deleteComment(Long commentId, Long boardId, Long loginUserId) {
@@ -108,7 +99,7 @@ public class CommentService {
         );
 
         // 로그인한 사람이 댓글 작성자도, 게시글 작성자도 아닐 때
-        if(!loginUserId.equals(findComment.getUser().getId()) && !loginUserId.equals(findBoard.getUser().getId())) {
+        if (!loginUserId.equals(findComment.getUser().getId()) && !loginUserId.equals(findBoard.getUser().getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 

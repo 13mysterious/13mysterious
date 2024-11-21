@@ -4,14 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.entity
- * <li>fileName       : Friend
- * <li>date           : 24. 11. 20.
- * <li>description    : friend 테이블 엔티티
- * </ul>
- */
 
 @Getter
 @Entity
@@ -44,6 +36,11 @@ public class Friend {
         this.fromUser = fromUser;
     }
 
+    /**
+     * 친구 수락
+     *
+     * @param status 요청 상태
+     */
     public void changeIsAccepted(boolean status) {
         isAccepted = status;
     }

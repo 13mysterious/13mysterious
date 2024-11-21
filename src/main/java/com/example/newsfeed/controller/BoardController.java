@@ -1,6 +1,4 @@
 package com.example.newsfeed.controller;
-
-
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +43,17 @@ public class BoardController {
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
     }
 
+    //친구 게시물 조회
+    @GetMapping("/friends")
+    public ResponseEntity<List<BoardResponseDto>> findAllFriendsBoards(
+            @SessionAttribute(name = "userId") Long userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(userId, page, size);
+
+        return new ResponseEntity<>(allFriendsBoards, HttpStatus.OK);
+    }
+  
     @PostMapping("/{boardId}/likes")
     public ResponseEntity<Void> sendLikes(
             @PathVariable Long boardId,

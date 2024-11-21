@@ -38,6 +38,11 @@ public class Comment extends BaseEntity {
         this.user = user;
     }
 
+    /**
+     * 댓글 내용 수정
+     *
+     * @param contents 수정할 내용
+     */
     public void updateComment(String contents) {
         this.contents = contents;
     }

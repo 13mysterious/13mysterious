@@ -14,6 +14,12 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * 유저 가입 메서드
+     *
+     * @param requestDto 가입 시 필요한 정보
+     * @return 가입에 성공한 유저 정보
+     */
     @PostMapping("/signup")
     public ResponseEntity<UserSignUpResponseDto> signUp(@RequestBody UserSignUpRequestDto requestDto) {
 
@@ -28,28 +34,51 @@ public class UserController {
         return new ResponseEntity<>(userSignUpResponseDto, HttpStatus.CREATED);
     }
 
+    /**
+     * 유저 비밀번호 변경 메서드
+     *
+     * @param userId
+     * @param requestDto
+     * @param sessionId
+     * @return
+     */
     @PatchMapping("/{userId}/password")
     public ResponseEntity<Void> updateUserPassword(
             @PathVariable Long userId,
             @RequestBody UserPatchPasswordRequestDto requestDto,
             @SessionAttribute(name = "userId") Long sessionId
-    ){
-        userService.updateUserPassword(userId, requestDto.getOldPassword(), requestDto.getNewPassword(),sessionId);
+    ) {
+        userService.updateUserPassword(userId, requestDto.getOldPassword(), requestDto.getNewPassword(), sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 유저 정보 변경 메서드
+     *
+     * @param userId
+     * @param requestDto
+     * @param sessionId
+     * @return
+     */
     @PatchMapping("/{userId}")
     public ResponseEntity<UserSignUpResponseDto> updateUserInfo(
             @PathVariable Long userId,
             @RequestBody UserPatchInfoRequestDto requestDto,
             @SessionAttribute(name = "userId") Long sessionId
-    ){
+    ) {
         UserSignUpResponseDto userSignUpResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
 
-        return new ResponseEntity<>(userSignUpResponseDto,HttpStatus.OK);
+        return new ResponseEntity<>(userSignUpResponseDto, HttpStatus.OK);
     }
 
+    /**
+     * 유저 탍퇴 메서드
+     *
+     * @param userId     유저 식별자
+     * @param requestDto 탈퇴 시 필요한 정보
+     * @return 탈퇴 시점 저장
+     */
     @PatchMapping("/{userId}/leave")
     public ResponseEntity<UserSignUpResponseDto> leaveUserInfo(
             @PathVariable Long userId,
@@ -60,6 +89,12 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 유저 정보 조회
+     *
+     * @param userId 유저 식별자
+     * @return 유저 조회 정보
+     */
     @GetMapping("/{userId}")
     public ResponseEntity<UserSignUpResponseDto> getUserInfo(
             @PathVariable Long userId

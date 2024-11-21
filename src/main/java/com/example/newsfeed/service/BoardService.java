@@ -2,13 +2,13 @@ package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.entity.Board;
-import com.example.newsfeed.entity.Likes;
 import com.example.newsfeed.entity.Comment;
+import com.example.newsfeed.entity.Likes;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.repository.BoardRepository;
 import com.example.newsfeed.repository.FriendRepository;
-import com.example.newsfeed.repository.LikesRepository;
 import com.example.newsfeed.repository.CommentRepository;
+import com.example.newsfeed.repository.LikesRepository;
 import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -181,14 +181,22 @@ public class BoardService {
         return new BoardUpdateResponseDto(findBoard);
     }
 
-
+    /**
+     * 게시글 단건 조회 메서드
+     *
+     * @param boardId 게시글 식별자
+     * @return 게시글과 그 게시글에 달린 댓글
+     */
     public BoardFindResponseDto findBoardById(Long boardId) {
 
+        // 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾지 못했습니다."));
 
+        // 조회한 게시글에 달린 댓글 조회
         List<Comment> allComments = commentRepository.findByBoard(findBoard);
 
+        // 조회한 댓글을 목록으로 저장
         List<CommentWithDateResponseDto> comments = allComments.stream().map(CommentWithDateResponseDto::new).toList();
 
         return new BoardFindResponseDto(
@@ -209,6 +217,7 @@ public class BoardService {
      * @param boardId     게시글 식별자
      * @param loginUserId 로그인 식별자
      */
+    @Transactional
     public void deleteBoard(Long boardId, Long loginUserId) {
         // 삭제할 게시글 조회
         Board findBoard = boardRepository.findById(boardId)

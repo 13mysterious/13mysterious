@@ -73,7 +73,7 @@ public class UserController {
     }
 
     /**
-     * 유저 탍퇴 메서드
+     * 유저 탈퇴 메서드
      *
      * @param userId     유저 식별자
      * @param requestDto 탈퇴 시 필요한 정보

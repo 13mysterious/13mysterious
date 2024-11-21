@@ -4,15 +4,6 @@ import com.example.newsfeed.entity.Board;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.dto
- * <li>fileName       : BoardUpdateResponseDto
- * <li>date           : 24. 11. 21.
- * <li>description    :
- * </ul>
- */
-
 @Getter
 @RequiredArgsConstructor
 public class BoardUpdateResponseDto {

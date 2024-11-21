@@ -18,13 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service
@@ -37,28 +35,39 @@ public class BoardService {
     private final LikesRepository likesRepository;
     private final CommentRepository commentRepository;
 
-    public BoardCreateResponseDto save(String title, String contents, @SessionAttribute(name = "userId") Long userId) {
+    /**
+     * 게시물 작성 메서드
+     * @param title
+     * @param contents
+     * @param sessionId
+     * @return
+     */
+    public BoardResponseDto createBoard(String title, String contents, Long sessionId) {
 
-        User findUser = userRepository.findById(userId)
+        User findUser = userRepository.findById(sessionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
         Board board = new Board(findUser, title, contents, 0);
 
         //게시물 저장
-        boardRepository.save(board);
+        Board createdBoard = boardRepository.save(board);
 
-        return new BoardCreateResponseDto(
-                board.getId(),
-                board.getTitle(),
-                board.getContents()
+        return new BoardResponseDto(
+                createdBoard.getId(),
+                createdBoard.getTitle(),
+                createdBoard.getContents(),
+                createdBoard.getUser().getName(),
+                createdBoard.getLikeCount(),
+                createdBoard.getCreatedAt(),
+                createdBoard.getModifiedAt()
         );
     }
 
     //게시물 목록 조회
-    public List<BoardResponseDto> findAllBoards(Long userId, int page, int size) {
+    public List<BoardResponseDto> findAllBoards(int page, int size) {
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
-        Page<Board> boardPage = boardRepository.findAllByUserId(userId, pageable);
+        Page<Board> boardPage = boardRepository.findAll( pageable);
 
         return boardPage.stream()
                 .map(board -> new BoardResponseDto(
@@ -73,6 +82,35 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 게시글 단건 조회 메서드
+     *
+     * @param boardId 게시글 식별자
+     * @return 게시글과 그 게시글에 달린 댓글
+     */
+    public BoardFindOneWithCommentResponseDto findBoardById(Long boardId) {
+
+        // 식별자로 게시글 조회
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾지 못했습니다."));
+
+        // 조회한 게시글에 달린 댓글 조회
+        List<Comment> allComments = commentRepository.findByBoard(findBoard);
+
+        // 조회한 댓글을 목록으로 저장
+        List<CommentResponseDto> comments = allComments.stream().map(CommentResponseDto::new).toList();
+        BoardResponseDto boardResponseDto = new BoardResponseDto( findBoard.getId(),
+                findBoard.getTitle(),
+                findBoard.getContents(),
+                findBoard.getUser().getName(),
+                findBoard.getLikeCount(),
+                findBoard.getCreatedAt(),
+                findBoard.getModifiedAt());
+        return new BoardFindOneWithCommentResponseDto(
+                boardResponseDto,
+                comments
+        );
+    }
 
     /**
      * 좋아요 처리 메서드
@@ -81,7 +119,7 @@ public class BoardService {
      * @param sessionId 로그인 식별자
      */
     @Transactional
-    public void sendLikes(Long boardId, Long sessionId) {
+    public void createLikes(Long boardId, Long sessionId) {
         // 게시글 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() ->
@@ -117,7 +155,7 @@ public class BoardService {
      * @param sessionId 로그인 식별자
      */
     @Transactional
-    public void sendUnlikes(Long boardId, Long sessionId){
+    public void deleteLikes(Long boardId, Long sessionId){
         // 게시글 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() ->
@@ -148,13 +186,13 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardUpdateResponseDto updateBoard(Long boardId, String title, String contents, Long loginUserId) {
+    public BoardUpdateResponseDto updateBoard(Long boardId, String title, String contents, Long sessionId) {
 
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
-        if (!loginUserId.equals(findBoard.getUser().getId())) {
+        if (!sessionId.equals(findBoard.getUser().getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -162,51 +200,23 @@ public class BoardService {
         return new BoardUpdateResponseDto(findBoard);
     }
 
-    /**
-     * 게시글 단건 조회 메서드
-     *
-     * @param boardId 게시글 식별자
-     * @return 게시글과 그 게시글에 달린 댓글
-     */
-    public BoardFindResponseDto findBoardById(Long boardId) {
 
-        // 식별자로 게시글 조회
-        Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾지 못했습니다."));
-
-        // 조회한 게시글에 달린 댓글 조회
-        List<Comment> allComments = commentRepository.findByBoard(findBoard);
-
-        // 조회한 댓글을 목록으로 저장
-        List<CommentWithDateResponseDto> comments = allComments.stream().map(CommentWithDateResponseDto::new).toList();
-
-        return new BoardFindResponseDto(
-                findBoard.getId(),
-                findBoard.getTitle(),
-                findBoard.getContents(),
-                findBoard.getUser().getName(),
-                findBoard.getLikeCount(),
-                comments,
-                findBoard.getCreatedAt(),
-                findBoard.getModifiedAt()
-        );
-    }
 
     /**
      * 게시글 삭제 메서드
      *
      * @param boardId     게시글 식별자
-     * @param loginUserId 로그인 식별자
+     * @param sessionId 로그인 식별자
      */
     @Transactional
-    public void deleteBoard(Long boardId, Long loginUserId) {
+    public void deleteBoard(Long boardId, Long sessionId) {
         // 삭제할 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         // 본인 글이 아닌 게시글을 삭제하려고 하는 경우
-        if (loginUserId != findBoard.getUser().getId()) {
+        if (sessionId != findBoard.getUser().getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -215,9 +225,9 @@ public class BoardService {
     }
 
     //친구 게시물 목록 조회
-    public List<BoardResponseDto> findAllFriendsBoards(Long UserId, int page, int size) {
+    public List<BoardResponseDto> findAllFriendsBoards(Long sessionId, int page, int size) {
         //주어진 userId를 통해 친구 목록을 가져옴
-        List<Long> friendIds = friendRepository.findByFromUser_Id(UserId);
+        List<Long> friendIds = friendRepository.findByFromUser_Id(sessionId);
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Board> friendBoardPage = boardRepository.findAllByUserIdIn(friendIds, pageable);

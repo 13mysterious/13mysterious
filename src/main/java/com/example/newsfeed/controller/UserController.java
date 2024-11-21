@@ -21,9 +21,9 @@ public class UserController {
      * @return 가입에 성공한 유저 정보
      */
     @PostMapping("/signup")
-    public ResponseEntity<UserSignUpResponseDto> signUp(@RequestBody UserSignUpRequestDto requestDto) {
+    public ResponseEntity<UserResponseDto> signUp(@RequestBody UserSignUpRequestDto requestDto) {
 
-        UserSignUpResponseDto userSignUpResponseDto =
+        UserResponseDto userSignUpResponseDto =
                 userService.signUp(
                         requestDto.getName(),
                         requestDto.getEmail(),
@@ -45,7 +45,7 @@ public class UserController {
     @PatchMapping("/{userId}/password")
     public ResponseEntity<Void> updateUserPassword(
             @PathVariable Long userId,
-            @RequestBody UserPatchPasswordRequestDto requestDto,
+            @RequestBody UserUpdatePasswordRequestDto requestDto,
             @SessionAttribute(name = "userId") Long sessionId
     ) {
         userService.updateUserPassword(userId, requestDto.getOldPassword(), requestDto.getNewPassword(), sessionId);
@@ -62,14 +62,14 @@ public class UserController {
      * @return
      */
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserSignUpResponseDto> updateUserInfo(
+    public ResponseEntity<UserResponseDto> updateUserInfo(
             @PathVariable Long userId,
-            @RequestBody UserPatchInfoRequestDto requestDto,
+            @RequestBody UserUpdateInfoRequestDto requestDto,
             @SessionAttribute(name = "userId") Long sessionId
     ) {
-        UserSignUpResponseDto userSignUpResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
+        UserResponseDto userResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
 
-        return new ResponseEntity<>(userSignUpResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     /**
@@ -80,7 +80,7 @@ public class UserController {
      * @return 탈퇴 시점 저장
      */
     @PatchMapping("/{userId}/leave")
-    public ResponseEntity<UserSignUpResponseDto> leaveUserInfo(
+    public ResponseEntity<UserResponseDto> leaveUserInfo(
             @PathVariable Long userId,
             @RequestBody UserLeaveRequestDto requestDto
     ) {
@@ -96,11 +96,11 @@ public class UserController {
      * @return 유저 조회 정보
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<UserSignUpResponseDto> getUserInfo(
+    public ResponseEntity<UserResponseDto> getUserInfo(
             @PathVariable Long userId
     ) {
-        UserSignUpResponseDto userSignUpResponseDto = userService.findUserInfo(userId);
+        UserResponseDto userResponseDto = userService.findUserInfo(userId);
 
-        return new ResponseEntity<>(userSignUpResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 }

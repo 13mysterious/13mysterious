@@ -1,7 +1,7 @@
 package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.UserLoginResponseDto;
-import com.example.newsfeed.dto.UserSignUpResponseDto;
+import com.example.newsfeed.dto.UserResponseDto;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public UserSignUpResponseDto signUp(String name, String email, String password, LocalDate birth, int age) {
+    public UserResponseDto signUp(String name, String email, String password, LocalDate birth, int age) {
 
         // 받아온 유저 정보를 변수에 저장
         User user = new User(name, email, password, birth, age);
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         // repository 에 저장
         User savedUser = userRepository.save(user);
 
-        return new UserSignUpResponseDto(
+        return new UserResponseDto(
                 savedUser.getId(),
                 savedUser.getName(),
                 savedUser.getEmail(),
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public UserSignUpResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId) {
+    public UserResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId) {
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
         // 유저 정보 수정
         findUser.updateUserInfo(name, birth, age);
 
-        return new UserSignUpResponseDto(
+        return new UserResponseDto(
                 findUser.getId(),
                 findUser.getEmail(),
                 findUser.getName(),
@@ -162,13 +162,13 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public UserSignUpResponseDto findUserInfo(Long userId) {
+    public UserResponseDto findUserInfo(Long userId) {
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
 
-        return new UserSignUpResponseDto(
+        return new UserResponseDto(
                 findUser.getId(),
                 findUser.getName(),
                 findUser.getEmail(),

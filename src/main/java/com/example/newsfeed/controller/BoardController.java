@@ -21,7 +21,7 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<BoardCreateResponseDto> save(
             @RequestBody CreateBoardRequestDto requestDto,
-            @SessionAttribute(name ="userId") Long userId) {
+            @SessionAttribute(name = "userId") Long userId) {
 
         //게시물 저장
         BoardCreateResponseDto boardCreateResponseDto =
@@ -39,8 +39,7 @@ public class BoardController {
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size)
-    {
+            @RequestParam(defaultValue = "10") int size) {
         List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(userId, page, size);
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
@@ -50,7 +49,7 @@ public class BoardController {
     public ResponseEntity<Void> sendLikes(
             @PathVariable Long boardId,
             @SessionAttribute(name = "userId") Long sessionId
-    ){
+    ) {
         boardService.sendLikes(boardId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -60,7 +59,7 @@ public class BoardController {
     public ResponseEntity<Void> sendLikesToggles(
             @PathVariable Long boardId,
             @SessionAttribute(name = "userId") Long sessionId
-    ){
+    ) {
         boardService.sendLikesToggles(boardId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -89,10 +88,10 @@ public class BoardController {
     }
 
 
-
     /**
      * 게시글 삭제
-     * @param boardId 게시글 식별자
+     *
+     * @param boardId     게시글 식별자
      * @param loginUserId 로그인 식별자
      * @return
      */
@@ -100,11 +99,8 @@ public class BoardController {
     public ResponseEntity<Void> deleteBoard(
             @PathVariable Long boardId,
             @SessionAttribute(name = "userId") Long loginUserId
-    ){
+    ) {
         boardService.deleteBoard(boardId, loginUserId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-}
-
-
 }

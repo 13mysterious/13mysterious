@@ -94,12 +94,12 @@ public class BoardService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Likes> likes = likesRepository.findByUserIdAndBoardId(sessionId,boardId);
+        Optional<Likes> likes = likesRepository.findByUserIdAndBoardId(sessionId, boardId);
         if (!likes.isEmpty() && likes.get().isLiked()) { // likes 있고, 좋아요 상태
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "좋아요 상태입니다.");
-        }else if(!likes.isEmpty() && !likes.get().isLiked()){ // likes 있는데, 좋아요 취소 -> 토글
+        } else if (!likes.isEmpty() && !likes.get().isLiked()) { // likes 있는데, 좋아요 취소 -> 토글
             sendLikesToggles(boardId, sessionId);
-        } else if(likes.isEmpty()){
+        } else if (likes.isEmpty()) {
             Likes currentBoard = new Likes(findLoginUser, findBoard);
             boolean status = !currentBoard.isLiked();
             currentBoard.setLiked(status);
@@ -155,7 +155,7 @@ public class BoardService {
                 new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
-        if(!loginUserId.equals(findBoard.getUser().getId())) {
+        if (!loginUserId.equals(findBoard.getUser().getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -183,20 +183,22 @@ public class BoardService {
                 findBoard.getCreatedAt(),
                 findBoard.getModifiedAt()
         );
+    }
 
     /**
      * 게시글 삭제 메서드
-     * @param boardId 게시글 식별자
+     *
+     * @param boardId     게시글 식별자
      * @param loginUserId 로그인 식별자
      */
     public void deleteBoard(Long boardId, Long loginUserId) {
         // 삭제할 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(()->
+                .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         // 본인 글이 아닌 게시글을 삭제하려고 하는 경우
-        if(loginUserId != findBoard.getUser().getId()){
+        if (loginUserId != findBoard.getUser().getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 

@@ -17,6 +17,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    //게시물 저장
     @PostMapping
     public ResponseEntity<BoardCreateResponseDto> save(
             @RequestBody CreateBoardRequestDto requestDto,
@@ -34,7 +35,7 @@ public class BoardController {
     }
 
     //게시물 목록 조회
-    @GetMapping
+    @GetMapping("/{userId}")
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
@@ -44,6 +45,27 @@ public class BoardController {
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
     }
+
+    @PostMapping("/{boardId}/likes")
+    public ResponseEntity<Void> sendLikes(
+            @PathVariable Long boardId,
+            @SessionAttribute(name = "userId") Long sessionId
+    ){
+        boardService.sendLikes(boardId, sessionId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/{boardId}/likes")
+    public ResponseEntity<Void> sendLikesToggles(
+            @PathVariable Long boardId,
+            @SessionAttribute(name = "userId") Long sessionId
+    ){
+        boardService.sendLikesToggles(boardId, sessionId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     // 게시물 수정
     @PatchMapping("/{boardId}")
     public ResponseEntity<BoardUpdateResponseDto> updateBoard(
@@ -64,6 +86,7 @@ public class BoardController {
 
         return new ResponseEntity<>(findBoard, HttpStatus.OK);
     }
+
 
 
 

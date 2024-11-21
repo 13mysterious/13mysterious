@@ -79,6 +79,21 @@ public class BoardController {
         BoardUpdateResponseDto boardUpdateResponseDto = boardService.updateBoard(boardId, dto.getTitle(), dto.getContents(), loginUserId);
         return new ResponseEntity<>(boardUpdateResponseDto, HttpStatus.OK);
     }
+
+    /**
+     * 게시글 삭제
+     * @param boardId 게시글 식별자
+     * @param loginUserId 로그인 식별자
+     * @return
+     */
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Void> deleteBoard(
+            @PathVariable Long boardId,
+            @SessionAttribute(name = "userId") Long loginUserId
+    ){
+        boardService.deleteBoard(boardId, loginUserId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
 
 

@@ -1,16 +1,7 @@
 package com.example.newsfeed.dto;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.dto
- * <li>fileName       : CommentRequestDto
- * <li>date           : 24. 11. 20.
- * <li>description    :
- * </ul>
- */
 
 @Getter
 public class CommentRequestDto {
@@ -21,5 +12,6 @@ public class CommentRequestDto {
         this.contents = contents;
     }
 
-    public CommentRequestDto(){}
+    public CommentRequestDto() {
+    }
 }

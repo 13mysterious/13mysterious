@@ -8,19 +8,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.controller
- * <li>fileName       : CommentController
- * <li>date           : 24. 11. 20.
- * <li>description    : 댓글 기능 관리 컨트롤러
- * </ul>
- */
 
 @RestController
 @RequiredArgsConstructor
@@ -33,8 +24,8 @@ public class CommentController {
      * 댓글 작성
      *
      * @param boardId 댓글을 작성할 게시글 식별자
-     * @param dto 댓글 contents 포함하는 요청 dto
-     * @param userId 댓글 작성하는 유저 식별자
+     * @param dto     댓글 contents 포함하는 요청 dto
+     * @param userId  댓글 작성하는 유저 식별자
      * @return 작성된 댓글 정보
      */
     @PostMapping
@@ -52,8 +43,8 @@ public class CommentController {
      * 게시글 내의 전체 댓글을 페이징하여 조회
      *
      * @param boardId 게시글 식별자
-     * @param page 페이지 번호
-     * @param size 페이지 크기
+     * @param page    페이지 번호
+     * @param size    페이지 크기
      * @return 페이징된 댓글 목록
      */
     @GetMapping
@@ -72,9 +63,9 @@ public class CommentController {
     /**
      * 댓글 내용 수정
      *
-     * @param boardId 게시글 식별자
+     * @param boardId   게시글 식별자
      * @param commentId 댓글 식별자
-     * @param dto 수정할 contents 포함한 요청 dto
+     * @param dto       수정할 contents 포함한 요청 dto
      * @return 수정된 댓글
      */
     @PatchMapping("/{commentId}")
@@ -91,8 +82,8 @@ public class CommentController {
     /**
      * 댓글 삭제. 댓글 작성자 또는 게시글 작성자만 삭제 가능.
      *
-     * @param boardId 게시글 식별자
-     * @param commentId 댓글 식별자
+     * @param boardId     게시글 식별자
+     * @param commentId   댓글 식별자
      * @param loginUserId 현재 로그인한 유저 식별자
      * @return 상태코드
      */

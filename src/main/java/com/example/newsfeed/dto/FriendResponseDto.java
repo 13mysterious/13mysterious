@@ -1,18 +1,9 @@
 package com.example.newsfeed.dto;
 
 import com.example.newsfeed.entity.Friend;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.dto
- * <li>fileName       : FriendResponseDto
- * <li>date           : 24. 11. 20.
- * <li>description    :
- * </ul>
- */
 
 @Getter
 @RequiredArgsConstructor

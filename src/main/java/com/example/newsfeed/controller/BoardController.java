@@ -1,11 +1,7 @@
 package com.example.newsfeed.controller;
 
 
-import com.example.newsfeed.dto.BoardCreateResponseDto;
-import com.example.newsfeed.dto.BoardResponseDto;
-import com.example.newsfeed.dto.BoardUpdateRequestDto;
-import com.example.newsfeed.dto.BoardUpdateResponseDto;
-import com.example.newsfeed.dto.CreateBoardRequestDto;
+import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,12 +23,14 @@ public class BoardController {
             @RequestBody CreateBoardRequestDto requestDto,
             @SessionAttribute(name ="userId") Long userId) {
 
+        //게시물 저장
         BoardCreateResponseDto boardCreateResponseDto =
                 boardService.save(
                         requestDto.getTitle(),
                         requestDto.getContents(),
                         userId
                 );
+
         return new ResponseEntity<>(boardCreateResponseDto, HttpStatus.CREATED);
     }
 
@@ -80,6 +78,18 @@ public class BoardController {
         return new ResponseEntity<>(boardUpdateResponseDto, HttpStatus.OK);
     }
 
+
+    //게시글 단건 조회
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardFindResponseDto> findBoardById(@PathVariable Long boardId) {
+
+        BoardFindResponseDto findBoard = boardService.findBoardById(boardId);
+
+        return new ResponseEntity<>(findBoard, HttpStatus.OK);
+    }
+
+
+
     /**
      * 게시글 삭제
      * @param boardId 게시글 식별자
@@ -97,3 +107,4 @@ public class BoardController {
 }
 
 
+}

@@ -1,13 +1,13 @@
 package com.example.newsfeed.service;
 
-import com.example.newsfeed.dto.BoardCreateResponseDto;
-import com.example.newsfeed.dto.BoardResponseDto;
-import com.example.newsfeed.dto.BoardUpdateResponseDto;
+import com.example.newsfeed.dto.*;
 import com.example.newsfeed.entity.Board;
 import com.example.newsfeed.entity.Likes;
+import com.example.newsfeed.entity.Comment;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.repository.BoardRepository;
 import com.example.newsfeed.repository.LikesRepository;
+import com.example.newsfeed.repository.CommentRepository;
 import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +31,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final LikesRepository likesRepository;
+    private final CommentRepository commentRepository;
 
     public BoardCreateResponseDto save(String title, String contents, @SessionAttribute(name = "userId") Long userId) {
 
@@ -162,6 +163,27 @@ public class BoardService {
         return new BoardUpdateResponseDto(findBoard);
     }
 
+
+    public BoardFindResponseDto findBoardById(Long boardId) {
+
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾지 못했습니다."));
+
+        List<Comment> allComments = commentRepository.findByBoard(findBoard);
+
+        List<CommentWithDateResponseDto> comments = allComments.stream().map(CommentWithDateResponseDto::new).toList();
+
+        return new BoardFindResponseDto(
+                findBoard.getId(),
+                findBoard.getTitle(),
+                findBoard.getContents(),
+                findBoard.getUser().getName(),
+                findBoard.getLikeCount(),
+                comments,
+                findBoard.getCreatedAt(),
+                findBoard.getModifiedAt()
+        );
+
     /**
      * 게시글 삭제 메서드
      * @param boardId 게시글 식별자
@@ -179,5 +201,6 @@ public class BoardService {
         }
 
         boardRepository.deleteById(boardId);
+
     }
 }

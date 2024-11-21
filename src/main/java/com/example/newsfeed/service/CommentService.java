@@ -113,8 +113,10 @@ public class CommentService {
      *
      * @param commentId   댓글 식별자
      * @param loginUserId 현재 로그인한 유저 식별자
+     * @return 1, 좋아요 수 1 증가
      */
-    public void createLike(Long commentId, Long loginUserId) {
+    @Transactional
+    public int createLike(Long commentId, Long loginUserId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -132,7 +134,8 @@ public class CommentService {
 
         CommentLikes like = new CommentLikes(new CommentLikesPK(findComment, findUser));
         commentLikesRepository.save(like);
-        findComment.updateLikeCount(1);
+
+        return 1;
     }
 
     /**
@@ -140,8 +143,10 @@ public class CommentService {
      *
      * @param commentId   댓글 식별자
      * @param loginUserId 현재 로그인한 유저 식별자
+     * @return -1, 좋아요 수 1 차감
      */
-    public void deleteLike(Long commentId, Long loginUserId) {
+    @Transactional
+    public int deleteLike(Long commentId, Long loginUserId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -156,6 +161,24 @@ public class CommentService {
         );
 
         commentLikesRepository.delete(findLike);
-        findComment.updateLikeCount(-1);
+
+        return -1;
+    }
+
+    /**
+     * 좋아요 개수 갱신
+     *
+     * @param commentId        댓글 식별자
+     * @param likeCountChanged 좋아요 개수 변경값
+     */
+    @Transactional
+    public void updateLikeCount(Long commentId, int likeCountChanged) {
+
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        findComment.updateLikeCount(likeCountChanged);
+        commentRepository.save(findComment);
     }
 }

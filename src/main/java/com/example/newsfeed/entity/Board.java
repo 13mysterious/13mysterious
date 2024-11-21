@@ -13,7 +13,7 @@ public class Board extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -36,5 +36,10 @@ public class Board extends BaseEntity{
         this.title = title;
         this.contents = contents;
         this.likeCount = likeCount;
+    }
+
+    public void update(String title, String contents) {
+        this.title = title;
+        this.contents = contents;
     }
 }

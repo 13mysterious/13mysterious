@@ -35,7 +35,7 @@ public class BoardController {
     }
 
     //게시물 목록 조회
-    @GetMapping("/{userId}")
+    @GetMapping
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,

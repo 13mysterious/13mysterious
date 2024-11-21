@@ -206,6 +206,7 @@ public class BoardService {
      * @param boardId     게시글 식별자
      * @param loginUserId 로그인 식별자
      */
+    @Transactional
     public void deleteBoard(Long boardId, Long loginUserId) {
         // 삭제할 게시글 조회
         Board findBoard = boardRepository.findById(boardId)

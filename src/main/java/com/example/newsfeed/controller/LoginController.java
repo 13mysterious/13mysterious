@@ -1,5 +1,6 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.UserLoginRequestDto;
 import com.example.newsfeed.dto.UserLoginResponseDto;
 import com.example.newsfeed.service.UserService;
@@ -36,7 +37,7 @@ public class LoginController {
 
         HttpSession session = request.getSession();
 
-        session.setAttribute("userId", userId);
+        session.setAttribute(Const.SESSION_KEY, userId);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }

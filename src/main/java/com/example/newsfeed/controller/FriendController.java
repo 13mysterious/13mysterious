@@ -1,5 +1,6 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.FriendResponseDto;
 import com.example.newsfeed.service.FriendService;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +22,16 @@ public class FriendController {
      * 친구 신청
      *
      * @param userId     친구 신청을 받는 유저 식별자
-     * @param fromUserId 친구 신청을 보내는 유저 식별자
+     * @param sessionId 친구 신청을 보내는 유저 식별자
      * @return 201
      */
     @PostMapping
     public ResponseEntity<Void> createFriendRequest(
             @PathVariable Long userId,
-            @SessionAttribute(name = "userId") Long fromUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        friendService.createFriendRequest(userId, fromUserId);
+        friendService.createFriendRequest(userId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -62,10 +63,10 @@ public class FriendController {
     public ResponseEntity<Void> acceptFriend(
             @PathVariable Long userId,
             @PathVariable Long friendId,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        friendService.acceptFriend(friendId, userId, loginUserId);
+        friendService.acceptFriend(friendId, userId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -75,16 +76,16 @@ public class FriendController {
      *
      * @param userId      대상 유저 식별자
      * @param friendId    친구 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      */
     @DeleteMapping("/{friendId}")
     public ResponseEntity<Void> deleteFriend(
             @PathVariable Long userId,
             @PathVariable Long friendId,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        friendService.deleteFriend(friendId, userId, loginUserId);
+        friendService.deleteFriend(friendId, userId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

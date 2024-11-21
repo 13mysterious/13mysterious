@@ -1,5 +1,6 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.CommentRequestDto;
 import com.example.newsfeed.dto.CommentResponseDto;
 import com.example.newsfeed.service.CommentService;
@@ -25,17 +26,17 @@ public class CommentController {
      *
      * @param boardId 댓글을 작성할 게시글 식별자
      * @param dto     댓글 contents 포함하는 요청 dto
-     * @param userId  댓글 작성하는 유저 식별자
+     * @param sessionId  댓글 작성하는 유저 식별자
      * @return 작성된 댓글 정보
      */
     @PostMapping
     public ResponseEntity<CommentResponseDto> createComment(
             @PathVariable Long boardId,
             @RequestBody CommentRequestDto dto,
-            @SessionAttribute(name = "userId") Long userId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        CommentResponseDto commentResponseDto = commentService.createComment(boardId, userId, dto.getContents());
+        CommentResponseDto commentResponseDto = commentService.createComment(boardId, sessionId, dto.getContents());
         return new ResponseEntity<>(commentResponseDto, HttpStatus.CREATED);
     }
 
@@ -84,17 +85,17 @@ public class CommentController {
      *
      * @param boardId     게시글 식별자
      * @param commentId   댓글 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      * @return 상태코드
      */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        commentService.deleteComment(commentId, boardId, loginUserId);
+        commentService.deleteComment(commentId, boardId, sessionId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -103,16 +104,16 @@ public class CommentController {
      *
      * @param boardId     게시글 식별자, 계층 표현용
      * @param commentId   댓글 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      */
     @PostMapping("/{commentId}/likes")
     public ResponseEntity<Void> createLike(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        int likeCountChanged = commentService.createLike(commentId, loginUserId);
+        int likeCountChanged = commentService.createLike(commentId, sessionId);
         commentService.updateLikeCount(commentId, likeCountChanged);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -128,7 +129,7 @@ public class CommentController {
     public ResponseEntity<Void> deleteLike(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long loginUserId
     ) {
 
         int likeCountChanged = commentService.deleteLike(commentId, loginUserId);

@@ -33,19 +33,19 @@ public class CommentService {
      * @param contents 내용
      * @return 작성된 댓글과 id dto
      */
-    public CommentResponseDto createComment(Long boardId, Long userId, String contents) {
+    public CommentResponseDto createComment(Long boardId, Long sessionId, String contents) {
 
         Board findBoard = boardRepository.findById(boardId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
-        User findUser = userRepository.findById(userId).orElseThrow(
+        User findUser = userRepository.findById(sessionId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
         Comment comment = new Comment(contents, findBoard, findUser);
-        commentRepository.save(comment);
+        Comment createdComment = commentRepository.save(comment);
 
-        return new CommentResponseDto(comment.getId(), comment.getUser().getName(), contents);
+        return new CommentResponseDto(createdComment);
     }
 
     /**
@@ -89,9 +89,9 @@ public class CommentService {
      *
      * @param commentId   댓글 식별자
      * @param boardId     게시글 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      */
-    public void deleteComment(Long commentId, Long boardId, Long loginUserId) {
+    public void deleteComment(Long commentId, Long boardId, Long sessionId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -101,7 +101,7 @@ public class CommentService {
         );
 
         // 로그인한 사람이 댓글 작성자도, 게시글 작성자도 아닐 때
-        if (!loginUserId.equals(findComment.getUser().getId()) && !loginUserId.equals(findBoard.getUser().getId())) {
+        if (!sessionId.equals(findComment.getUser().getId()) && !sessionId.equals(findBoard.getUser().getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -112,17 +112,17 @@ public class CommentService {
      * 댓글 좋아요 생성
      *
      * @param commentId   댓글 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      * @return 1, 좋아요 수 1 증가
      */
     @Transactional
-    public int createLike(Long commentId, Long loginUserId) {
+    public int createLike(Long commentId, Long sessionId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
-        User findUser = userRepository.findById(loginUserId).orElseThrow(
+        User findUser = userRepository.findById(sessionId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
@@ -142,17 +142,17 @@ public class CommentService {
      * 좋아요 취소(삭제)
      *
      * @param commentId   댓글 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      * @return -1, 좋아요 수 1 차감
      */
     @Transactional
-    public int deleteLike(Long commentId, Long loginUserId) {
+    public int deleteLike(Long commentId, Long sessionId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
-        User findUser = userRepository.findById(loginUserId).orElseThrow(
+        User findUser = userRepository.findById(sessionId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 

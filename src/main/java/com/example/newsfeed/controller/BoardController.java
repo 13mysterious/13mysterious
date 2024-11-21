@@ -1,4 +1,5 @@
 package com.example.newsfeed.controller;
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +18,19 @@ public class BoardController {
 
     //게시물 저장
     @PostMapping
-    public ResponseEntity<BoardCreateResponseDto> save(
-            @RequestBody CreateBoardRequestDto requestDto,
-            @SessionAttribute(name = "userId") Long userId) {
+    public ResponseEntity<BoardResponseDto> createBoard(
+            @RequestBody BoardCreateRequestDto requestDto,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId) {
 
         //게시물 저장
-        BoardCreateResponseDto boardCreateResponseDto =
-                boardService.save(
+        BoardResponseDto boardResponseDto =
+                boardService.createBoard(
                         requestDto.getTitle(),
                         requestDto.getContents(),
-                        userId
+                        sessionId
                 );
 
-        return new ResponseEntity<>(boardCreateResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(boardResponseDto, HttpStatus.CREATED);
     }
 
     //게시물 목록 조회
@@ -45,10 +46,10 @@ public class BoardController {
     //친구 게시물 조회
     @GetMapping("/friends")
     public ResponseEntity<List<BoardResponseDto>> findAllFriendsBoards(
-            @SessionAttribute(name = "userId") Long userId,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(userId, page, size);
+        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(sessionId, page, size);
 
         return new ResponseEntity<>(allFriendsBoards, HttpStatus.OK);
     }
@@ -57,14 +58,13 @@ public class BoardController {
      * 좋아요 API
      * @param boardId 게시글 식별자
      * @param sessionId 로그인 식별자
-     * @return
      */
     @PostMapping("/{boardId}/likes")
-    public ResponseEntity<Void> sendLikes(
+    public ResponseEntity<Void> createLikes(
             @PathVariable Long boardId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
-        boardService.sendLikes(boardId, sessionId);
+        boardService.createLikes(boardId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -76,11 +76,11 @@ public class BoardController {
      * @return
      */
     @DeleteMapping("/{boardId}/likes")
-    public ResponseEntity<Void> sendUnlikes(
+    public ResponseEntity<Void> deleteLikes(
             @PathVariable Long boardId,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
-        boardService.sendUnlikes(boardId, sessionId);
+        boardService.deleteLikes(boardId, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -90,10 +90,10 @@ public class BoardController {
     public ResponseEntity<BoardUpdateResponseDto> updateBoard(
             @PathVariable Long boardId,
             @RequestBody BoardUpdateRequestDto dto,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        BoardUpdateResponseDto boardUpdateResponseDto = boardService.updateBoard(boardId, dto.getTitle(), dto.getContents(), loginUserId);
+        BoardUpdateResponseDto boardUpdateResponseDto = boardService.updateBoard(boardId, dto.getTitle(), dto.getContents(), sessionId);
         return new ResponseEntity<>(boardUpdateResponseDto, HttpStatus.OK);
     }
 
@@ -105,9 +105,9 @@ public class BoardController {
      * @return 게시글 내용과 댓글 내용
      */
     @GetMapping("/{boardId}")
-    public ResponseEntity<BoardFindResponseDto> findBoardById(@PathVariable Long boardId) {
+    public ResponseEntity<BoardFindOneWithCommentResponseDto> findBoardById(@PathVariable Long boardId) {
 
-        BoardFindResponseDto findBoard = boardService.findBoardById(boardId);
+        BoardFindOneWithCommentResponseDto findBoard = boardService.findBoardById(boardId);
 
         return new ResponseEntity<>(findBoard, HttpStatus.OK);
     }
@@ -117,15 +117,15 @@ public class BoardController {
      * 게시글 삭제
      *
      * @param boardId     게시글 식별자
-     * @param loginUserId 로그인 식별자
+     * @param sessionId 로그인 식별자
      * @return 200
      */
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> deleteBoard(
             @PathVariable Long boardId,
-            @SessionAttribute(name = "userId") Long loginUserId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
-        boardService.deleteBoard(boardId, loginUserId);
+        boardService.deleteBoard(boardId, sessionId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

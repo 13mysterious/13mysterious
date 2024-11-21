@@ -60,12 +60,12 @@ public class FriendService {
      * 친구 수락 메서드. 본인의 친구창이 아닐 경우 예외 던짐
      *
      * @param userId      현재 친구 목록을 가진 유저 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      */
     @Transactional
-    public void acceptFriend(Long friendId, Long userId, Long loginUserId) {
+    public void acceptFriend(Long friendId, Long userId, Long sessionId) {
 
-        if (!userId.equals(loginUserId)) {
+        if (!userId.equals(sessionId)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -81,11 +81,11 @@ public class FriendService {
      *
      * @param friendId    삭제할 친구 식별자
      * @param userId      현재 친구 목록을 가진 유저 식별자
-     * @param loginUserId 현재 로그인한 유저 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      */
-    public void deleteFriend(Long friendId, Long userId, Long loginUserId) {
+    public void deleteFriend(Long friendId, Long userId, Long sessionId) {
 
-        if (!userId.equals(loginUserId)) {
+        if (!userId.equals(sessionId)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 

@@ -3,12 +3,13 @@ package com.example.newsfeed.dto;
 import lombok.Getter;
 
 @Getter
-public class UserPatchPasswordRequestDto {
+public class UserUpdatePasswordRequestDto {
+
     private final String oldPassword;
 
     private final String newPassword;
 
-    public UserPatchPasswordRequestDto(String oldPassword, String newPassword){
+    public UserUpdatePasswordRequestDto(String oldPassword, String newPassword){
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;
     }

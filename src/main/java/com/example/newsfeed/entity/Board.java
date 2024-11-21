@@ -37,4 +37,17 @@ public class Board extends BaseEntity{
         this.contents = contents;
         this.likeCount = likeCount;
     }
+
+    public void update(String title, String contents) {
+        this.title = title;
+        this.contents = contents;
+    }
+
+    public void plusLikeCount(){
+        this.likeCount = this.likeCount + 1;
+    }
+
+    public void minusLikeCount(){
+        this.likeCount = this.likeCount - 1;
+    }
 }

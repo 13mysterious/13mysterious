@@ -156,5 +156,6 @@ public class CommentService {
         );
 
         commentLikesRepository.delete(findLike);
+        findComment.updateLikeCount(-1);
     }
 }

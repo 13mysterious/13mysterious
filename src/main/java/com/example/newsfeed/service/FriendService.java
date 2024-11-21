@@ -11,18 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.service
- * <li>fileName       : FriendService
- * <li>date           : 24. 11. 20.
- * <li>description    :
- * </ul>
- */
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +24,7 @@ public class FriendService {
     /**
      * 친구 신청 메서드. friend 테이블에 row 생성
      *
-     * @param toUserId 친구 신청을 받는 유저 식별자
+     * @param toUserId   친구 신청을 받는 유저 식별자
      * @param fromUserId 친구 신청을 보내는 유저 식별자
      */
     public void createFriendRequest(Long toUserId, Long fromUserId) {
@@ -58,7 +48,10 @@ public class FriendService {
      */
     public List<FriendResponseDto> findAllFriends(Long id) {
 
-        List<Friend> findFriends = friendRepository.findALlById(id);
+        User findUser = userRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+        List<Friend> findFriends = friendRepository.findByToUser(findUser);
 
         return findFriends.stream().map(FriendResponseDto::new).toList();
     }
@@ -66,13 +59,13 @@ public class FriendService {
     /**
      * 친구 수락 메서드. 본인의 친구창이 아닐 경우 예외 던짐
      *
-     * @param friendId 친구 식별자
-     * @param isLoginUser 로그인한 유저의 친구 목록이 맞다면 true
+     * @param userId      현재 친구 목록을 가진 유저 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
      */
     @Transactional
-    public void acceptFriend(Long friendId, boolean isLoginUser) {
+    public void acceptFriend(Long friendId, Long userId, Long loginUserId) {
 
-        if(!isLoginUser) {
+        if (!userId.equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -83,9 +76,16 @@ public class FriendService {
         findFriend.changeIsAccepted(true);
     }
 
-    public void deleteFriend(Long friendId, boolean isLoginUser) {
+    /**
+     * 친구 삭제
+     *
+     * @param friendId    삭제할 친구 식별자
+     * @param userId      현재 친구 목록을 가진 유저 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     */
+    public void deleteFriend(Long friendId, Long userId, Long loginUserId) {
 
-        if(!isLoginUser) {
+        if (!userId.equals(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 

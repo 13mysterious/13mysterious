@@ -4,14 +4,6 @@ import com.example.newsfeed.entity.Comment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.dto
- * <li>fileName       : CommentResponseDto
- * <li>date           : 24. 11. 20.
- * <li>description    :
- * </ul>
- */
 
 @Getter
 @RequiredArgsConstructor

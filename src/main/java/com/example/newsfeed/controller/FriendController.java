@@ -9,14 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * <ul>
- * <li>packageName    : com.example.newsfeed.controller
- * <li>fileName       : FriendController
- * <li>date           : 24. 11. 20.
- * <li>description    :
- * </ul>
- */
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +18,7 @@ public class FriendController {
     private final FriendService friendService;
 
     /**
-     * 친구 신청 메서드
+     * 친구 신청
      *
      * @param userId     친구 신청을 받는 유저 식별자
      * @param fromUserId 친구 신청을 보내는 유저 식별자
@@ -60,12 +52,11 @@ public class FriendController {
     }
 
     /**
-     * 친구 수락 메서드
+     * 친구 수락
      *
-     * @param userId
-     * @param friendId
-     * @param loginUserId
-     * @return
+     * @param userId      친구 요청 받은 유저 식별자
+     * @param friendId    친구 요청한 유저 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
      */
     @PatchMapping("/{friendId}")
     public ResponseEntity<Void> acceptFriend(
@@ -74,11 +65,18 @@ public class FriendController {
             @SessionAttribute(name = "userId") Long loginUserId
     ) {
 
-        friendService.acceptFriend(friendId, userId.equals(loginUserId));
+        friendService.acceptFriend(friendId, userId, loginUserId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 친구 삭제/거절
+     *
+     * @param userId      대상 유저 식별자
+     * @param friendId    친구 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     */
     @DeleteMapping("/{friendId}")
     public ResponseEntity<Void> deleteFriend(
             @PathVariable Long userId,
@@ -86,7 +84,7 @@ public class FriendController {
             @SessionAttribute(name = "userId") Long loginUserId
     ) {
 
-        friendService.deleteFriend(friendId, userId.equals(loginUserId));
+        friendService.deleteFriend(friendId, userId, loginUserId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

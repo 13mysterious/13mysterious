@@ -8,6 +8,7 @@ import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
@@ -36,7 +37,7 @@ public class FriendService {
      * @param toUserId 친구 신청을 받는 유저 식별자
      * @param fromUserId 친구 신청을 보내는 유저 식별자
      */
-    public void requestFriend(Long toUserId, Long fromUserId) {
+    public void createFriendRequest(Long toUserId, Long fromUserId) {
 
         User findToUser = userRepository.findById(toUserId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -68,6 +69,7 @@ public class FriendService {
      * @param friendId 친구 식별자
      * @param isLoginUser 로그인한 유저의 친구 목록이 맞다면 true
      */
+    @Transactional
     public void acceptFriend(Long friendId, boolean isLoginUser) {
 
         if(!isLoginUser) {

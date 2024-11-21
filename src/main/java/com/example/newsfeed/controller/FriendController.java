@@ -33,12 +33,12 @@ public class FriendController {
      * @return 201
      */
     @PostMapping
-    public ResponseEntity<Void> requestFriend(
+    public ResponseEntity<Void> createFriendRequest(
             @PathVariable Long userId,
             @SessionAttribute(name = "userId") Long fromUserId
     ) {
 
-        friendService.requestFriend(userId, fromUserId);
+        friendService.createFriendRequest(userId, fromUserId);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

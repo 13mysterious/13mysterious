@@ -6,6 +6,7 @@ import com.example.newsfeed.entity.Comment;
 import com.example.newsfeed.entity.Likes;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.repository.BoardRepository;
+import com.example.newsfeed.repository.FriendRepository;
 import com.example.newsfeed.repository.CommentRepository;
 import com.example.newsfeed.repository.LikesRepository;
 import com.example.newsfeed.repository.UserRepository;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -30,6 +33,7 @@ public class BoardService {
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final FriendRepository friendRepository;
     private final LikesRepository likesRepository;
     private final CommentRepository commentRepository;
 
@@ -53,7 +57,7 @@ public class BoardService {
     //게시물 목록 조회
     public List<BoardResponseDto> findAllBoards(Long userId, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Board> boardPage = boardRepository.findAllByUserId(userId, pageable);
 
         return boardPage.stream()
@@ -228,5 +232,26 @@ public class BoardService {
 
         boardRepository.deleteById(boardId);
 
+    }
+
+    //친구 게시물 목록 조회
+    public List<BoardResponseDto> findAllFriendsBoards(Long UserId, int page, int size) {
+        //주어진 userId를 통해 친구 목록을 가져옴
+        List<Long> friendIds = friendRepository.findByFromUser_Id(UserId);
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
+        Page<Board> friendBoardPage = boardRepository.findAllByUserIdIn(friendIds, pageable);
+
+        return friendBoardPage.stream()
+                .map(board -> new BoardResponseDto(
+                        board.getId(),
+                        board.getTitle(),
+                        board.getContents(),
+                        board.getUser().getName(),
+                        board.getLikeCount(),
+                        board.getCreatedAt(),
+                        board.getModifiedAt()
+                ))
+                .collect(Collectors.toList());
     }
 }

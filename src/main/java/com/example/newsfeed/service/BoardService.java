@@ -75,6 +75,7 @@ public class BoardService {
      * @param boardId   게시글 식별자
      * @param sessionId 로그인 식별자
      */
+    @Transactional
     public void sendLikes(Long boardId, Long sessionId) {
         // 게시글 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
@@ -103,8 +104,10 @@ public class BoardService {
             boolean status = !currentBoard.isLiked();
             currentBoard.setLiked(status);
             likesRepository.save(currentBoard);
+            // 게시글 조회하여서 like count + 1 갱신
+            findBoard.plusLikeCount();
+            boardRepository.save(findBoard);
         }
-
     }
 
     /**
@@ -114,36 +117,48 @@ public class BoardService {
      * @param sessionId 로그인 식별자
      */
     public void sendLikesToggles(Long boardId, Long sessionId) {
+        // 게시글 식별자로 게시글 조회
+        Board findBoard = boardRepository.findById(boardId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        // 게시글 작성자 조회
+        Long findAuthorUserId = findBoard.getUser().getId();
+
+        // 현재 어떤 유저가 로그인 했는지 조회
+        User findLoginUser = userRepository.findById(sessionId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
         Optional<Likes> existLike = likesRepository.findByUserIdAndBoardId(sessionId, boardId);
 
+        Likes likes;
+        // 좋아요 엔티티 존재
         if (existLike.isPresent()) {
-            Likes likes = existLike.get();
+            likes = existLike.get();
             boolean status = !likes.isLiked();
             likes.setLiked(status);
             likesRepository.save(likes);
         } else {
-            // 게시글 식별자로 게시글 조회
-            Board findBoard = boardRepository.findById(boardId)
-                    .orElseThrow(() ->
-                            new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
-
-            // 현재 어떤 유저가 로그인 했는지 조회
-            User findLoginUser = userRepository.findById(sessionId)
-                    .orElseThrow(() ->
-                            new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-            // 게시글 작성자 조회
-            Long findAuthorUserId = findBoard.getUser().getId();
-
             //자기 자신에게 좋아요 취소 할 수 없음
             if (sessionId == findAuthorUserId) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
 
-            Likes currentBoard = new Likes(findLoginUser, findBoard);
-            boolean status = !currentBoard.isLiked();
-            currentBoard.setLiked(status);
-            likesRepository.save(currentBoard);
+            likes = new Likes(findLoginUser, findBoard);
+            boolean status = !likes.isLiked();
+            likes.setLiked(status);
+            likesRepository.save(likes);
+        }
+
+        if(likes.isLiked() == false){
+            // 게시글 조회하여서 like count - 1 갱신
+            findBoard.minusLikeCount();
+            boardRepository.save(findBoard);
+        }else if(likes.isLiked() == true){
+            // 게시글 조회하여서 like count + 1 갱신
+            findBoard.plusLikeCount();
+            boardRepository.save(findBoard);
         }
     }
 

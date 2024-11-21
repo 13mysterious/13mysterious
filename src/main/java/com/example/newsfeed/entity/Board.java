@@ -42,4 +42,12 @@ public class Board extends BaseEntity{
         this.title = title;
         this.contents = contents;
     }
+
+    public void plusLikeCount(){
+        this.likeCount = this.likeCount + 1;
+    }
+
+    public void minusLikeCount(){
+        this.likeCount = this.likeCount - 1;
+    }
 }

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,7 @@ public class BoardService {
     //게시물 목록 조회
     public List<BoardResponseDto> findAllBoards(Long userId, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Board> boardPage = boardRepository.findAllByUserId(userId, pageable);
 
         return boardPage.stream()
@@ -234,11 +235,11 @@ public class BoardService {
     }
 
     //친구 게시물 목록 조회
-    public List<BoardResponseDto> findAllFriendsBoards(Long fromUserId, int page, int size) {
+    public List<BoardResponseDto> findAllFriendsBoards(Long UserId, int page, int size) {
         //주어진 userId를 통해 친구 목록을 가져옴
-        List<Long> friendIds = friendRepository.findByFromUser_Id(fromUserId);
+        List<Long> friendIds = friendRepository.findByFromUser_Id(UserId);
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Board> friendBoardPage = boardRepository.findAllByUserIdIn(friendIds, pageable);
 
         return friendBoardPage.stream()

@@ -38,7 +38,4 @@ public class Likes {
         this.isLiked = isLiked;
     }
 
-    public void changeIsLiked(){
-        this.isLiked = !this.isLiked;
-    }
 }

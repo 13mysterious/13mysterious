@@ -93,51 +93,18 @@ public class BoardService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Likes> likes = likesRepository.findLikesByUserId(sessionId);
-        if (!likes.isEmpty() && likes.get().isLiked()) {
+        Optional<Likes> likes = likesRepository.findByUserIdAndBoardId(sessionId,boardId);
+        if (!likes.isEmpty() && likes.get().isLiked()) { // likes 있고, 좋아요 상태
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "좋아요 상태입니다.");
-        }
-        Likes currentBoard = new Likes(findLoginUser, findBoard);
-        currentBoard.changeIsLiked();
-        likesRepository.save(currentBoard);
-
-    }
-
-    /**
-     * 좋아요 취소 메서드
-     *
-     * @param boardId   게시글 식별자
-     * @param sessionId 로그인 식별자
-     */
-    public void sendUnLikes(Long boardId, Long sessionId) {
-        // 게시글 식별자로 게시글 조회
-        Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
-
-        // 현재 어떤 유저가 로그인 했는지 조회
-        User findLoginUser = userRepository.findById(sessionId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-        // 게시글 작성자 조회
-        Long findAutorUserId = findBoard.getUser().getId();
-
-        //자기 자신에게 좋아요 취소 할 수 없음
-        if (sessionId == findAutorUserId) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }else if(!likes.isEmpty() && !likes.get().isLiked()){ // likes 있는데, 좋아요 취소 -> 토글
+            sendLikesToggles(boardId, sessionId);
+        } else if(likes.isEmpty()){
+            Likes currentBoard = new Likes(findLoginUser, findBoard);
+            boolean status = !currentBoard.isLiked();
+            currentBoard.setLiked(status);
+            likesRepository.save(currentBoard);
         }
 
-        // likes 테이블에서 현재 로그인한 사람이 해당 게시글을 로그인했는지 조회
-        Optional<Likes> likes = Optional.ofNullable(likesRepository.findLikesByUserId(sessionId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND)));
-        if (!likes.get().isLiked()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "좋아요 취소 상태입니다.");
-
-        }
-        likes.get().changeIsLiked();
-        likesRepository.save(likes.get());
     }
 
     /**
@@ -168,8 +135,14 @@ public class BoardService {
             // 게시글 작성자 조회
             Long findAuthorUserId = findBoard.getUser().getId();
 
+            //자기 자신에게 좋아요 취소 할 수 없음
+            if (sessionId == findAuthorUserId) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+
             Likes currentBoard = new Likes(findLoginUser, findBoard);
-            currentBoard.changeIsLiked();
+            boolean status = !currentBoard.isLiked();
+            currentBoard.setLiked(status);
             likesRepository.save(currentBoard);
         }
     }

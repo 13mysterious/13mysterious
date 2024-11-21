@@ -15,6 +15,10 @@ import java.util.List;
  */
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
+
+    List<Long> findByFromUser_Id(Long fromUserId);
+
+
     default List<Friend> findALlById(Long id) {
         return findAll().stream()
                 .filter(friend -> friend.getId().equals(id))

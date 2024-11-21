@@ -23,7 +23,7 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<BoardCreateResponseDto> save(
             @RequestBody CreateBoardRequestDto requestDto,
-            @SessionAttribute(name ="userId") Long userId) {
+            @SessionAttribute(name = "userId") Long userId) {
 
         BoardCreateResponseDto boardCreateResponseDto =
                 boardService.save(
@@ -39,10 +39,20 @@ public class BoardController {
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size)
-    {
+            @RequestParam(defaultValue = "10") int size) {
         List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(userId, page, size);
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
+    }
+
+    //친구 게시물 조회
+    @GetMapping("/friends")
+    public ResponseEntity<List<BoardResponseDto>> findAllFriendsBoards(
+            @RequestParam Long fromUserId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(fromUserId, page, size);
+
+        return new ResponseEntity<>(allFriendsBoards, HttpStatus.OK);
     }
 }

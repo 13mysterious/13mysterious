@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
 
-    List<Long> findByFromUser_Id(Long fromUserId);
+    List<Long> findByFromUser_Id(Long UserId);
 
 
     default List<Friend> findALlById(Long id) {

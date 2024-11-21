@@ -106,4 +106,26 @@ public class CommentController {
         commentService.deleteComment(commentId, boardId, loginUserId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/{commentId}")
+    public ResponseEntity<Void> createLike(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId,
+            @SessionAttribute(name = "userId") Long loginUserId
+    ) {
+
+        commentService.createLike(commentId, loginUserId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{commentId}/like")
+    public ResponseEntity<Void> deleteLike(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId,
+            @SessionAttribute(name = "userId") Long loginUserId
+    ) {
+
+        commentService.deleteLike(commentId, loginUserId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

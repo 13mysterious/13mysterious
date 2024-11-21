@@ -1,12 +1,8 @@
 package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.CommentResponseDto;
-import com.example.newsfeed.entity.Board;
-import com.example.newsfeed.entity.Comment;
-import com.example.newsfeed.entity.User;
-import com.example.newsfeed.repository.BoardRepository;
-import com.example.newsfeed.repository.CommentRepository;
-import com.example.newsfeed.repository.UserRepository;
+import com.example.newsfeed.entity.*;
+import com.example.newsfeed.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <ul>
@@ -33,6 +30,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final CommentLikesRepository commentLikesRepository;
 
     /**
      * 댓글 작성
@@ -115,5 +113,42 @@ public class CommentService {
         }
 
         commentRepository.delete(findComment);
+    }
+
+    public void createLike(Long commentId, Long loginUserId) {
+
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        User findUser = userRepository.findById(loginUserId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        boolean isLikePresent = commentLikesRepository.findById(new CommentLikesPK(findComment, findUser)).isPresent();
+        if(findComment.getUser().equals(findUser) || isLikePresent) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        CommentLikes like = new CommentLikes(new CommentLikesPK(findComment, findUser));
+        commentLikesRepository.save(like);
+        findComment.updateLikeCount(1);
+    }
+
+    public void deleteLike(Long commentId, Long loginUserId) {
+
+        Comment findComment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        User findUser = userRepository.findById(loginUserId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        CommentLikes findLike = commentLikesRepository.findById(new CommentLikesPK(findComment, findUser)).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        commentLikesRepository.delete(findLike);
     }
 }

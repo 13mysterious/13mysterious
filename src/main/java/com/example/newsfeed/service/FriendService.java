@@ -8,6 +8,7 @@ import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
@@ -68,6 +69,7 @@ public class FriendService {
      * @param friendId 친구 식별자
      * @param isLoginUser 로그인한 유저의 친구 목록이 맞다면 true
      */
+    @Transactional
     public void acceptFriend(Long friendId, boolean isLoginUser) {
 
         if(!isLoginUser) {

@@ -2,7 +2,10 @@ package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.CommentResponseDto;
 import com.example.newsfeed.entity.*;
-import com.example.newsfeed.repository.*;
+import com.example.newsfeed.repository.BoardRepository;
+import com.example.newsfeed.repository.CommentLikesRepository;
+import com.example.newsfeed.repository.CommentRepository;
+import com.example.newsfeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -106,6 +108,12 @@ public class CommentService {
         commentRepository.delete(findComment);
     }
 
+    /**
+     * 댓글 좋아요 생성
+     *
+     * @param commentId   댓글 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     */
     public void createLike(Long commentId, Long loginUserId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
@@ -116,8 +124,9 @@ public class CommentService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
 
+        // 이미 좋아요가 눌려있다면 예외 발생
         boolean isLikePresent = commentLikesRepository.findById(new CommentLikesPK(findComment, findUser)).isPresent();
-        if(findComment.getUser().equals(findUser) || isLikePresent) {
+        if (findComment.getUser().equals(findUser) || isLikePresent) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
@@ -126,6 +135,12 @@ public class CommentService {
         findComment.updateLikeCount(1);
     }
 
+    /**
+     * 좋아요 취소(삭제)
+     *
+     * @param commentId   댓글 식별자
+     * @param loginUserId 현재 로그인한 유저 식별자
+     */
     public void deleteLike(Long commentId, Long loginUserId) {
 
         Comment findComment = commentRepository.findById(commentId).orElseThrow(

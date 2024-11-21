@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -27,6 +30,9 @@ public class Board extends BaseEntity{
     @Column(nullable = false)
     private int likeCount;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<Comment>();
+
     public Board() {
 
     }
@@ -41,5 +47,13 @@ public class Board extends BaseEntity{
     public void update(String title, String contents) {
         this.title = title;
         this.contents = contents;
+    }
+
+    public void plusLikeCount(){
+        this.likeCount = this.likeCount + 1;
+    }
+
+    public void minusLikeCount(){
+        this.likeCount = this.likeCount - 1;
     }
 }

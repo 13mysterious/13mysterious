@@ -1,6 +1,4 @@
 package com.example.newsfeed.controller;
-
-
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +33,7 @@ public class BoardController {
     }
 
     //게시물 목록 조회
-    @GetMapping("/{userId}")
+    @GetMapping
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
@@ -45,6 +43,17 @@ public class BoardController {
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
     }
 
+    //친구 게시물 조회
+    @GetMapping("/friends")
+    public ResponseEntity<List<BoardResponseDto>> findAllFriendsBoards(
+            @SessionAttribute(name = "userId") Long userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(userId, page, size);
+
+        return new ResponseEntity<>(allFriendsBoards, HttpStatus.OK);
+    }
+  
     @PostMapping("/{boardId}/likes")
     public ResponseEntity<Void> sendLikes(
             @PathVariable Long boardId,
@@ -78,7 +87,12 @@ public class BoardController {
     }
 
 
-    //게시글 단건 조회
+    /**
+     * 게시글 단건 조회
+     *
+     * @param boardId 게시글 식별자
+     * @return 게시글 내용과 댓글 내용
+     */
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardFindResponseDto> findBoardById(@PathVariable Long boardId) {
 
@@ -93,7 +107,7 @@ public class BoardController {
      *
      * @param boardId     게시글 식별자
      * @param loginUserId 로그인 식별자
-     * @return
+     * @return 200
      */
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> deleteBoard(

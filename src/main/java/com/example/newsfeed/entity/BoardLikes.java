@@ -7,7 +7,7 @@ import lombok.Getter;
 @Entity
 @Getter
 @AllArgsConstructor
-@Table(name = "likes")
+@Table(name = "board_likes")
 public class BoardLikes {
 
     @EmbeddedId

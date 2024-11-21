@@ -104,13 +104,11 @@ public class BoardService {
 
         if (likes.isPresent() == true) { // boardLikes 있음, 좋아요 상태
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "좋아요 상태입니다.");
-        } else if (likes.isPresent() == false) { // boardLikes 없는 상태
-            BoardLikes boardLikes = new BoardLikes(findLoginUser, findBoard);
-            likesRepository.save(boardLikes);
-            // 게시글 조회하여서 like count + 1 갱신
-            findBoard.addLikeCount();
-            boardRepository.save(findBoard);
         }
+
+        BoardLikes boardLikes = new BoardLikes(findLoginUser, findBoard);
+        likesRepository.save(boardLikes);
+        updateBoardLikeCount(boardId, true);
     }
 
     /**
@@ -142,51 +140,11 @@ public class BoardService {
 
         if (likes.isPresent() == false) { // boardLikes 없음, 좋아요 취소 상태
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "좋아요 취소 상태입니다.");
-        } else if (likes.isPresent() == true) { // boardLikes 있는 상태
-            BoardLikes boardLikes = new BoardLikes(findLoginUser, findBoard);
-            likesRepository.delete(boardLikes);
-            // 게시글 조회하여서 like count - 1 갱신
-            findBoard.removeLikeCount();
-            boardRepository.save(findBoard);
         }
-    }
 
-    /**
-     * 좋아요 토글 메서드
-     *
-     * @param boardId   게시글 식별자
-     * @param sessionId 로그인 식별자
-     */
-    public void sendLikesToggles(Long boardId, Long sessionId) {
-        // 게시글 식별자로 게시글 조회
-        Board findBoard = boardRepository.findById(boardId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
-
-        // 게시글 작성자 조회
-        Long findAuthorUserId = findBoard.getUser().getId();
-
-        // 현재 어떤 유저가 로그인 했는지 조회
-        User findLoginUser = userRepository.findById(sessionId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-
-        Optional<BoardLikes> existLike = likesRepository.findByBoardLikePK_UserAndBoardLikePK_Board(findLoginUser, findBoard);
-
-        BoardLikes boardLikes;
-        // 좋아요 엔티티 존재
-        if (existLike.isPresent()) {
-            boardLikes = existLike.get();
-            likesRepository.save(boardLikes);
-        } else {
-            //자기 자신에게 좋아요 취소 할 수 없음
-            if (sessionId == findAuthorUserId) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-            }
-
-            boardLikes = new BoardLikes(findLoginUser, findBoard);
-            likesRepository.save(boardLikes);
-        }
+        BoardLikes boardLikes = new BoardLikes(findLoginUser, findBoard);
+        likesRepository.delete(boardLikes);
+        updateBoardLikeCount(boardId, false);
     }
 
     @Transactional
@@ -275,5 +233,23 @@ public class BoardService {
                         board.getModifiedAt()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateBoardLikeCount(Long boardId, boolean flagLikes){
+        // 게시글 식별자로 게시글 조회
+        Board findBoard = boardRepository.findById(boardId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        if(flagLikes){
+            // 게시글 조회하여서 like count + 1 갱신
+            findBoard.addLikeCount();
+        }else{
+            // 게시글 조회하여서 like count - 1 갱신
+            findBoard.removeLikeCount();
+        }
+
+        boardRepository.save(findBoard);
     }
 }

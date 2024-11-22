@@ -1,6 +1,9 @@
 package com.example.newsfeed.filter;
 
 import com.example.newsfeed.config.Const;
+import com.example.newsfeed.exception.CustomException;
+import com.example.newsfeed.exception.ErrorResponseEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +13,8 @@ import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+
+import static com.example.newsfeed.exception.ErrorCode.INVALID_LOGIN;
 
 public class LoginFilter implements Filter {
 
@@ -33,17 +38,36 @@ public class LoginFilter implements Filter {
 
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        //화이트 리스트에 포함되지 않은 경우
-        if (!isWhiteList(requestURI)) {
+        try{
+            //화이트 리스트에 포함되지 않은 경우
+            if (!isWhiteList(requestURI)) {
 
-            HttpSession session = httpRequest.getSession(false);
+                HttpSession session = httpRequest.getSession(false);
 
-            if (session == null || session.getAttribute(Const.SESSION_KEY) == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
+                if (session == null || session.getAttribute(Const.SESSION_KEY) == null) {
+                    throw new CustomException(INVALID_LOGIN);
+                }
             }
+
+            chain.doFilter(request, response);
+        }catch (CustomException e){
+            httpResponse.setStatus(e.getErrorCode().getHttpStatus().value());
+            httpResponse.setContentType("application/json;charset=UTF-8");
+
+            ErrorResponseEntity errorResponse = ErrorResponseEntity.builder()
+                    .status(e.getErrorCode().getHttpStatus().value())
+                    .code(e.getErrorCode().name())
+                    .message(e.getErrorCode().getMessage())
+                    .detailMessage(e.getDetailMessage())
+                    .build();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+
+            httpResponse.getWriter().write(jsonResponse);
         }
 
-        chain.doFilter(request, response);
+
     }
 
     /**

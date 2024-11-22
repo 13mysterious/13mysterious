@@ -15,6 +15,9 @@ public enum ErrorCode {
     INVALID_LEAVE_USER(HttpStatus.BAD_REQUEST, "INVALID_LEAVE_USER", "이미 탈퇴한 유저입니다."),
     INVALID_INPUT_EMAIL(HttpStatus.BAD_REQUEST, "INVALID_INPUT_EMAIL", "이미 사용중인 이메일입니다."),
     INVALID_LIKE_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_LIKE_REQUEST", "본인이 작성자인 글에 좋아요를 누를 수 없습니다."),
+    INVALID_UNLIKE_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_UNLIKE_REQUEST", "본인이 작성자인 글에 좋아요 취소를 누를 수 없습니다."),
+    INVALID_LIKE_ALREADY(HttpStatus.BAD_REQUEST, "INVALID_LIKE_ALREADY", "좋아요 상태입니다."),
+    INVALID_UNLIKE_ALREADY(HttpStatus.BAD_REQUEST, "INVALID_UNLIKE_ALREADY", "좋아요 취소 상태입니다."),
 
     /* 401 로그인하지 않고 CRUD 접근 확인 */
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED,"INVALID_LOGIN","로그인 후에 사용해주세요."),

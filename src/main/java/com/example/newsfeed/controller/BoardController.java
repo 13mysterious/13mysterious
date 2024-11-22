@@ -3,12 +3,10 @@ import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -79,7 +77,6 @@ public class BoardController {
      * 좋아요 취소 API
      * @param boardId 게시글 섹별자
      * @param sessionId 로그인 식별자
-     * @return
      */
     @DeleteMapping("/{boardId}/likes")
     public ResponseEntity<Void> deleteLikes(

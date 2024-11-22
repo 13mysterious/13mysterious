@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +19,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, length = 50)
     private String email;
 
     @Column(nullable = false, length = 100)
@@ -32,6 +34,9 @@ public class User {
     @Column
     private LocalDate leaveDate;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Board> boards = new ArrayList<Board>();
+
     public User() {
     }
 
@@ -43,17 +48,17 @@ public class User {
         this.age = age;
     }
 
-    public void updateUserPassword(String password){
+    public void updateUserPassword(String password) {
         this.password = password;
     }
 
-    public void updateUserInfo(String name, LocalDate birth, int age){
+    public void updateUserInfo(String name, LocalDate birth, int age) {
         this.name = name;
         this.birth = birth;
         this.age = age;
     }
 
-    public void leaveUser(LocalDate leaveDate){
+    public void leaveUser(LocalDate leaveDate) {
         this.leaveDate = leaveDate;
     }
 }

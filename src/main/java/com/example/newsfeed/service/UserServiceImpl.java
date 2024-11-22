@@ -8,7 +8,6 @@ import com.example.newsfeed.exception.CustomException;
 import com.example.newsfeed.exception.ErrorCode;
 import com.example.newsfeed.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +25,11 @@ public class UserServiceImpl implements UserService {
     /**
      * 유저 가입 메서드
      *
-     * @param name          유저 이름
-     * @param email         유저 이메일
-     * @param password      유저 비밀번호
-     * @param birth         유저 생일
-     * @param age           유저 나이
+     * @param name     유저 이름
+     * @param email    유저 이메일
+     * @param password 유저 비밀번호
+     * @param birth    유저 생일
+     * @param age      유저 나이
      * @return
      */
     @Override
@@ -63,8 +62,8 @@ public class UserServiceImpl implements UserService {
     /**
      * 로그인 메서드
      *
-     * @param email         유저 가입한 이메일
-     * @param password      유저 가입한 비밀번호
+     * @param email    유저 가입한 이메일
+     * @param password 유저 가입한 비밀번호
      * @return
      */
     @Override
@@ -74,11 +73,11 @@ public class UserServiceImpl implements UserService {
         Optional<User> findUser = userRepository.findUserByEmail(email);
 
         // 이메일이 다르거나 비밀번호가 다른 경우
-        if (findUser.isEmpty() ) {
+        if (findUser.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_EMAIL);
-        } else if(!passwordEncoder.matches(password,findUser.get().getPassword())) {
+        } else if (!passwordEncoder.matches(password, findUser.get().getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
-        } else if(findUser.get().getLeaveDate()!=null){
+        } else if (findUser.get().getLeaveDate() != null) {
             throw new CustomException(ErrorCode.INVALID_LEAVE_USER);
         }
 
@@ -89,10 +88,10 @@ public class UserServiceImpl implements UserService {
     /**
      * 비밀번호 수정 메서드
      *
-     * @param userId            수정 하고 싶은 유저 식별자
-     * @param oldPassword       현재 비밀번호
-     * @param newPassword       새 비밀번호
-     * @param sessionId         현재 로그인 중인 유저 식별자
+     * @param userId      수정 하고 싶은 유저 식별자
+     * @param oldPassword 현재 비밀번호
+     * @param newPassword 새 비밀번호
+     * @param sessionId   현재 로그인 중인 유저 식별자
      */
     @Transactional
     @Override
@@ -108,7 +107,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 비밀번호가 일치하지 않는 경우
-        if (!passwordEncoder.matches(oldPassword,findUser.getPassword())) {
+        if (!passwordEncoder.matches(oldPassword, findUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
@@ -124,11 +123,11 @@ public class UserServiceImpl implements UserService {
     /**
      * 유저 정보 수정 메서드
      *
-     * @param userId        수정할 유저 식별자
-     * @param name          수정할 이름
-     * @param birth         수정할 생일
-     * @param age           수정할 나이
-     * @param sessionId     현재 로그인 중인 유저 식별자
+     * @param userId    수정할 유저 식별자
+     * @param name      수정할 이름
+     * @param birth     수정할 생일
+     * @param age       수정할 나이
+     * @param sessionId 현재 로그인 중인 유저 식별자
      * @return
      */
     @Transactional
@@ -157,9 +156,10 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 유저 탈퇴 메서드
      *
-     * @param userId        탈퇴할 유저 식별자
-     * @param password      탈퇴할 유저 비밀번호
+     * @param userId   탈퇴할 유저 식별자
+     * @param password 탈퇴할 유저 비밀번호
      */
     @Transactional
     @Override
@@ -170,24 +170,24 @@ public class UserServiceImpl implements UserService {
                 new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 비밀번호가 다를 경우
-        if (!passwordEncoder.matches(password,findUser.getPassword())) {
+        if (!passwordEncoder.matches(password, findUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
-        // 탈퇴 날짜 저장
-        findUser.leaveUser(LocalDate.now());
+        userRepository.deleteById(userId);
 
-        // 로그아웃 처리
-        HttpSession session = request.getSession(false);
+        User leavedUser = new User(findUser.getName(), findUser.getEmail(), findUser.getPassword(), findUser.getBirth(), findUser.getAge());
 
-        if (session != null) {
-            session.invalidate();
-        }
+        leavedUser.leaveUser(LocalDate.now());
+
+        userRepository.save(leavedUser);
+
     }
 
     /**
+     * 유저 조회 메서드
      *
-     * @param userId    조회할 유저 식별자
+     * @param userId 조회할 유저 식별자
      * @return
      */
     @Override

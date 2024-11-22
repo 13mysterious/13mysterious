@@ -4,6 +4,7 @@ import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.CommentRequestDto;
 import com.example.newsfeed.dto.CommentResponseDto;
 import com.example.newsfeed.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentResponseDto> createComment(
             @PathVariable Long boardId,
-            @RequestBody CommentRequestDto dto,
+            @Valid @RequestBody CommentRequestDto dto,
             @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 

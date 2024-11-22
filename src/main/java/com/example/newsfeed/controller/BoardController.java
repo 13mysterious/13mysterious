@@ -2,10 +2,12 @@ package com.example.newsfeed.controller;
 import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
+import com.example.newsfeed.util.ValidationUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,8 +24,14 @@ public class BoardController {
     //게시물 저장
     @PostMapping
     public ResponseEntity<BoardResponseDto> createBoard(
-            @RequestBody BoardCreateRequestDto requestDto,
-            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId) {
+            @Valid @RequestBody BoardCreateRequestDto requestDto,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
+            BindingResult bindingResult
+    ) {
+
+        if (bindingResult.hasErrors()) {
+            ValidationUtils.bindErrorMessage(bindingResult);
+        }
 
         //게시물 저장
         BoardResponseDto boardResponseDto =
@@ -86,7 +94,6 @@ public class BoardController {
      * 좋아요 취소 API
      * @param boardId 게시글 섹별자
      * @param sessionId 로그인 식별자
-     * @return
      */
     @DeleteMapping("/{boardId}/likes")
     public ResponseEntity<Void> deleteLikes(
@@ -102,9 +109,13 @@ public class BoardController {
     @PatchMapping("/{boardId}")
     public ResponseEntity<BoardUpdateResponseDto> updateBoard(
             @PathVariable Long boardId,
-            @RequestBody BoardUpdateRequestDto dto,
-            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
+            @Valid @RequestBody BoardUpdateRequestDto dto,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            ValidationUtils.bindErrorMessage(bindingResult);
+        }
 
         BoardUpdateResponseDto boardUpdateResponseDto = boardService.updateBoard(boardId, dto.getTitle(), dto.getContents(), sessionId);
         return new ResponseEntity<>(boardUpdateResponseDto, HttpStatus.OK);

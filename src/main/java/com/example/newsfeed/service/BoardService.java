@@ -2,6 +2,12 @@ package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.entity.*;
+import com.example.newsfeed.entity.Board;
+import com.example.newsfeed.entity.Comment;
+import com.example.newsfeed.entity.BoardLikes;
+import com.example.newsfeed.entity.User;
+import com.example.newsfeed.exception.CustomException;
+import com.example.newsfeed.exception.ErrorCode;
 import com.example.newsfeed.repository.BoardRepository;
 import com.example.newsfeed.repository.FriendRepository;
 import com.example.newsfeed.repository.CommentRepository;
@@ -22,6 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.newsfeed.exception.ErrorCode.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,12 +46,12 @@ public class BoardService {
      * @param title
      * @param contents
      * @param sessionId
-     * @return
+     * @return 작성한 게시글 출력
      */
     public BoardResponseDto createBoard(String title, String contents, Long sessionId) {
 
         User findUser = userRepository.findById(sessionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         Board board = new Board(findUser, title, contents, 0);
 
@@ -61,7 +69,15 @@ public class BoardService {
         );
     }
 
-    //게시물 목록 조회
+    /**
+     * 게시글 목록 조회
+     * @param sortType 정렬 타입
+     * @param page 페이지 번호
+     * @param size 페이지 사이즈
+     * @param start 기간별 조회 시 시작 날짜
+     * @param end 기간별 조회 시 마지막 날짜
+     * @return 게시물 리스트 출력
+     */
     public List<BoardResponseDto> findAllBoards(String sortType, int page, int size,String start,String end) {
 
         Pageable pageable;
@@ -107,7 +123,7 @@ public class BoardService {
 
         // 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾지 못했습니다."));
+                new CustomException(BOARD_NOT_FOUND));
 
         // 조회한 게시글에 달린 댓글 조회
         List<Comment> allComments = commentRepository.findByBoard(findBoard);
@@ -121,6 +137,7 @@ public class BoardService {
                 findBoard.getLikeCount(),
                 findBoard.getCreatedAt(),
                 findBoard.getModifiedAt());
+
         return new BoardFindOneWithCommentResponseDto(
                 boardResponseDto,
                 comments
@@ -138,7 +155,7 @@ public class BoardService {
         // 게시글 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+                        new CustomException(BOARD_NOT_FOUND));
 
         // 게시글 작성자 조회
         Long findAuthorUserId = findBoard.getUser().getId();
@@ -146,21 +163,25 @@ public class BoardService {
         // 현재 어떤 유저가 로그인 했는지 조회
         User findLoginUser = userRepository.findById(sessionId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                        new CustomException(USER_NOT_FOUND));
 
         //자기 자신에게 좋아요 할 수 없음
         if (sessionId == findAuthorUserId) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(INVALID_LIKE_REQUEST);
         }
 
+        // BoardLikes 엔티티 조회
         Optional<BoardLikes> likes = likesRepository.findByBoardLikePK_UserAndBoardLikePK_Board(findLoginUser, findBoard);
 
         if (likes.isPresent() == true) { // boardLikes 있음, 좋아요 상태
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "좋아요 상태입니다.");
+            throw new CustomException(INVALID_LIKE_ALREADY);
         }
 
+        // 좋아요 생성
         BoardLikes boardLikes = new BoardLikes(findLoginUser, findBoard);
         likesRepository.save(boardLikes);
+
+        //좋아요 카운팅
         updateBoardLikeCount(boardId, true);
     }
 
@@ -174,7 +195,7 @@ public class BoardService {
         // 게시글 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+                        new CustomException(BOARD_NOT_FOUND));
 
         // 게시글 작성자 조회
         Long findAuthorUserId = findBoard.getUser().getId();
@@ -182,33 +203,45 @@ public class BoardService {
         // 현재 어떤 유저가 로그인 했는지 조회
         User findLoginUser = userRepository.findById(sessionId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                        new CustomException(USER_NOT_FOUND));
 
-        //자기 자신에게 좋아요 취소 할 수 없음
+        //자기 자신에게 좋아요 할 수 없음
         if (sessionId == findAuthorUserId) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(INVALID_UNLIKE_REQUEST);
         }
 
+        // BoardLikes 엔티티 조회
         Optional<BoardLikes> likes = likesRepository.findByBoardLikePK_UserAndBoardLikePK_Board(findLoginUser, findBoard);
 
         if (likes.isPresent() == false) { // boardLikes 없음, 좋아요 취소 상태
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "좋아요 취소 상태입니다.");
+            throw new CustomException(INVALID_UNLIKE_ALREADY);
         }
 
+        // 좋아요 삭제
         BoardLikes boardLikes = new BoardLikes(findLoginUser, findBoard);
         likesRepository.delete(boardLikes);
+
+        // 좋아요 카운팅
         updateBoardLikeCount(boardId, false);
     }
 
+    /**
+     * 게시물 수정
+     * @param boardId 게시글 식별자
+     * @param title 수정할 게시글 제목
+     * @param contents 수정할 게시글 내용
+     * @param sessionId 로그인한 유저
+     * @return 게시글 업데이트 내용
+     */
     @Transactional
     public BoardUpdateResponseDto updateBoard(Long boardId, String title, String contents, Long sessionId) {
 
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND)
+                new CustomException(BOARD_NOT_FOUND)
         );
 
         if (!sessionId.equals(findBoard.getUser().getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new CustomException(INVALID_USER_NAME);
         }
 
         findBoard.update(title, contents);
@@ -228,11 +261,11 @@ public class BoardService {
         // 삭제할 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND));
+                        new CustomException(BOARD_NOT_FOUND));
 
         // 본인 글이 아닌 게시글을 삭제하려고 하는 경우
         if (sessionId != findBoard.getUser().getId()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new CustomException(INVALID_USER_NAME);
         }
 
         boardRepository.deleteById(boardId);
@@ -268,12 +301,17 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 좋아요 개수 카운트 하는 메서드
+     * @param boardId
+     * @param flagLikes
+     */
     @Transactional
     public void updateBoardLikeCount(Long boardId, boolean flagLikes){
         // 게시글 식별자로 게시글 조회
         Board findBoard = boardRepository.findById(boardId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+                        new CustomException(BOARD_NOT_FOUND));
 
         if(flagLikes){
             // 게시글 조회하여서 like count + 1 갱신

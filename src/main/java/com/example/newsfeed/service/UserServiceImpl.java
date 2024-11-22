@@ -4,18 +4,15 @@ import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.UserLoginResponseDto;
 import com.example.newsfeed.dto.UserResponseDto;
 import com.example.newsfeed.entity.User;
+import com.example.newsfeed.exception.CustomException;
+import com.example.newsfeed.exception.ErrorCode;
 import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +38,9 @@ public class UserServiceImpl implements UserService {
 
         // 탈퇴한 유저일 경우
         if (findUser.isPresent() && findUser.get().getLeaveDate() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.INVALID_LEAVE_USER);
         } else if (findUser.isPresent()) { // 동일한 이메일이 있는 경우
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다.");
+            throw new CustomException(ErrorCode.INVALID_INPUT_EMAIL);
         }
 
         // 받아온 유저 정보를 변수에 저장
@@ -75,8 +72,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> findUser = userRepository.findUserByEmail(email);
 
         // 이메일이 다르거나 비밀번호가 다른 경우
-        if (findUser.isEmpty() || !passwordEncoder.matches(password,findUser.get().getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if (findUser.isEmpty() ) {
+            throw new CustomException(ErrorCode.INVALID_EMAIL);
+        } else if(!passwordEncoder.matches(password,findUser.get().getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         return new UserLoginResponseDto(findUser.get().getId(), findUser.get().getEmail());
@@ -97,21 +96,21 @@ public class UserServiceImpl implements UserService {
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
+                new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 로그인한 유저가 다른 유저 정보를 조회할 경우
         if (userId != sessionId) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 접근입니다.");
+            throw new CustomException(ErrorCode.INVALID_SESSION_ID);
         }
 
         // 비밀번호가 일치하지 않는 경우
         if (!findUser.getPassword().equals(oldPassword)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀 번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         // 현재 비밀번호와 새 비밀번호가 같을 경우
         if (oldPassword.equals(newPassword)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.INVALID_INPUT_PASSWORD);
         }
 
         findUser.updateUserPassword(newPassword);
@@ -134,11 +133,11 @@ public class UserServiceImpl implements UserService {
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
+                new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 로그인한 유저가 다른 유저 정보를 조회할 경우
         if (userId != sessionId) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 접근입니다.");
+            throw new CustomException(ErrorCode.INVALID_SESSION_ID);
         }
 
         // 유저 정보 수정
@@ -164,11 +163,11 @@ public class UserServiceImpl implements UserService {
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
+                new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 비밀번호가 다를 경우
         if (!findUser.getPassword().equals(password)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         // 탈퇴 날짜 저장
@@ -185,7 +184,7 @@ public class UserServiceImpl implements UserService {
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾지 못했습니다."));
+                new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return new UserResponseDto(
                 findUser.getId(),

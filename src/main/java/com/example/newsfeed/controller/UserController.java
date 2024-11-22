@@ -1,6 +1,7 @@
 package com.example.newsfeed.controller;
 
 import com.example.newsfeed.config.Const;
+import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-
+    private final PasswordEncoder passwordEncoder;
     /**
      * 유저 가입 메서드
      *
@@ -28,7 +29,7 @@ public class UserController {
                 userService.signUp(
                         requestDto.getName(),
                         requestDto.getEmail(),
-                        requestDto.getPassword(),
+                        passwordEncoder.encode(requestDto.getPassword()),
                         requestDto.getBirth(),
                         requestDto.getAge()
                 );

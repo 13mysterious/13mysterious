@@ -11,12 +11,20 @@ public enum ErrorCode {
     /* 400 잘못된 입력값 */
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "잘못된 입력값입니다."),
     INVALID_INPUT_PARAM(HttpStatus.BAD_REQUEST, "INVALID_INPUT_PARAM", "잘못된 파라미터 값입니다."),
+    INVALID_INPUT_PASSWORD(HttpStatus.BAD_REQUEST, "INVALID_INPUT_PASSWORD", "같은 비밀번호 입니다."),
+    INVALID_LEAVE_USER(HttpStatus.BAD_REQUEST, "INVALID_LEAVE_USER", "이미 탈퇴한 유저입니다."),
+    INVALID_INPUT_EMAIL(HttpStatus.BAD_REQUEST, "INVALID_INPUT_EMAIL", "이미 사용중인 이메일입니다."),
     INVALID_LIKE_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_LIKE_REQUEST", "본인이 작성자인 글에 좋아요를 누를 수 없습니다."),
+    INVALID_UNLIKE_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_UNLIKE_REQUEST", "본인이 작성자인 글에 좋아요 취소를 누를 수 없습니다."),
+    INVALID_LIKE_ALREADY(HttpStatus.BAD_REQUEST, "INVALID_LIKE_ALREADY", "좋아요 상태입니다."),
+    INVALID_UNLIKE_ALREADY(HttpStatus.BAD_REQUEST, "INVALID_UNLIKE_ALREADY", "좋아요 취소 상태입니다."),
 
     /* 401 로그인하지 않고 CRUD 접근 확인 */
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED,"INVALID_LOGIN","로그인 후에 사용해주세요."),
     /* 401 로그인, 작성자 이름 확인 */
     INVALID_USER_NAME(HttpStatus.UNAUTHORIZED,"INVALID_USER_NAME","로그인한 사용자와 작성자가 일치하지 않습니다."),
+    /* 401 같은 유저인지 확인 */
+    INVALID_SESSION_ID(HttpStatus.UNAUTHORIZED,"INVALID_SESSION_ID","사용자 정보와 일치하지 않습니다."),
     /* 401 이메일 확인 */
     INVALID_EMAIL(HttpStatus.UNAUTHORIZED,"INVALID_EMAIL","이메일이 일치하지 않습니다."),
     /* 401 비밀 번호 확인 */

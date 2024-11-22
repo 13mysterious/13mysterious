@@ -129,8 +129,11 @@ public class CommentService {
         );
 
         // 이미 좋아요가 눌려있다면 예외 발생
+        // 본인의 글에 좋아요를 누를 때 예외 발생
         boolean isLikePresent = commentLikesRepository.findById(new CommentLikesPK(findComment, findUser)).isPresent();
-        if (findComment.getUser().equals(findUser) || isLikePresent) {
+        if (isLikePresent) {
+            throw new CustomException(ErrorCode.INVALID_LIKE_ALREADY);
+        } else if (findComment.getUser().equals(findUser)) {
             throw new CustomException(ErrorCode.INVALID_LIKE_REQUEST);
         }
 

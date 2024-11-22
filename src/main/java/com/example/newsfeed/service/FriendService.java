@@ -35,7 +35,7 @@ public class FriendService {
 
         // 본인에게 친구신청 할 수 없음
         if(toUserId.equals(fromUserId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(ErrorCode.INVALID_FRIEND_REQUEST);
         }
 
         User findToUser = userRepository.findById(toUserId).orElseThrow(() ->

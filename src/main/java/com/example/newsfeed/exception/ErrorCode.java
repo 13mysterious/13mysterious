@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_UNLIKE_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_UNLIKE_REQUEST", "본인이 작성자인 글에 좋아요 취소를 누를 수 없습니다."),
     INVALID_LIKE_ALREADY(HttpStatus.BAD_REQUEST, "INVALID_LIKE_ALREADY", "좋아요 상태입니다."),
     INVALID_UNLIKE_ALREADY(HttpStatus.BAD_REQUEST, "INVALID_UNLIKE_ALREADY", "좋아요 취소 상태입니다."),
+    INVALID_FRIEND_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_FRIEND_REQUEST", "자신의 계정에 친구 요청을 보낼 수 없습니다."),
 
     /* 401 로그인하지 않고 CRUD 접근 확인 */
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED,"INVALID_LOGIN","로그인 후에 사용해주세요."),

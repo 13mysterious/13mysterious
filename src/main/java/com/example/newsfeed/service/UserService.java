@@ -2,6 +2,7 @@ package com.example.newsfeed.service;
 
 import com.example.newsfeed.dto.UserLoginResponseDto;
 import com.example.newsfeed.dto.UserResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
 
@@ -14,7 +15,7 @@ public interface UserService {
 
     UserResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId);
 
-    void leave(Long userId, String password);
+    void leave(Long userId, String password, HttpServletRequest request);
 
     UserResponseDto findUserInfo(Long userId);
 

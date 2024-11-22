@@ -5,6 +5,7 @@ import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.UserService;
 import com.example.newsfeed.util.ValidationUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -105,13 +106,14 @@ public class UserController {
     public ResponseEntity<UserResponseDto> leaveUserInfo(
             @PathVariable Long userId,
             @Valid @RequestBody UserLeaveRequestDto requestDto,
+            HttpServletRequest request,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
             ValidationUtils.bindErrorMessage(bindingResult);
         }
 
-        userService.leave(userId, requestDto.getPassword());
+        userService.leave(userId, requestDto.getPassword(), request);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

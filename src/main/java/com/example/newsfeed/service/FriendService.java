@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -29,6 +30,7 @@ public class FriendService {
      * @param toUserId   친구 신청을 받는 유저 식별자
      * @param fromUserId 친구 신청을 보내는 유저 식별자
      */
+    @Transactional
     public void createFriendRequest(Long toUserId, Long fromUserId) {
 
         // 본인에게 친구신청 할 수 없음
@@ -43,7 +45,16 @@ public class FriendService {
                 new CustomException(ErrorCode.USER_NOT_FOUND)
         );
 
-        Friend friend = new Friend(false, findToUser, findFromUser);
+        Friend friend;
+        Optional<Friend> reversedFriend = friendRepository.findByToUserAndFromUser(findFromUser, findToUser);
+        // toUser와 fromUser가 반대인 친구 요청이 와있는 경우 양쪽을 true로 저장
+        if(reversedFriend.isPresent()) {
+            friend = new Friend(true, findToUser, findFromUser);
+            reversedFriend.get().changeIsAccepted(true);
+        } else {
+            friend = new Friend(false, findToUser, findFromUser);
+        }
+
         friendRepository.save(friend);
     }
 
@@ -104,6 +115,10 @@ public class FriendService {
                 () -> new CustomException(ErrorCode.FRIEND_NOT_FOUND)
         );
 
+        Friend findReversedFriend = friendRepository.findByToUserAndFromUser(findFriend.getFromUser(), findFriend.getToUser())
+                .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         friendRepository.delete(findFriend);
+        friendRepository.delete(findReversedFriend);
     }
 }

@@ -3,10 +3,12 @@ import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -36,9 +38,13 @@ public class BoardController {
     //게시물 목록 조회
     @GetMapping
     public ResponseEntity<List<BoardResponseDto>> findAllBoards(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(page, size);
+            @RequestParam(required = false, defaultValue = "createdAt") String sort,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "1970-01-01") String startDate,
+            @RequestParam(required = false, defaultValue = "2099-12-31") String endDate
+    ) {
+        List<BoardResponseDto> allBoardsDto = boardService.findAllBoards(sort,page, size,startDate,endDate);
 
         return new ResponseEntity<>(allBoardsDto, HttpStatus.OK);
     }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,10 +65,27 @@ public class BoardService {
     }
 
     //게시물 목록 조회
-    public List<BoardResponseDto> findAllBoards(int page, int size) {
+    public List<BoardResponseDto> findAllBoards(String sortType, int page, int size,String start,String end) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        Page<Board> boardPage = boardRepository.findAll(pageable);
+        Pageable pageable;
+        Page<Board> boardPage;
+        if("likes".equals(sortType)){
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("likeCount")));
+            boardPage = boardRepository.findAll(pageable);
+        }else if("period".equals(sortType)){
+            LocalDate startDate = LocalDate.parse(start);
+            LocalDate endDate = LocalDate.parse(end);
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("modifiedAt")));
+            boardPage = boardRepository.findByCreatedAtBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay(),pageable);
+        }else if("modifiedAt".equals(sortType)){
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("modifiedAt")));
+            boardPage = boardRepository.findAll(pageable);
+        }
+        else{
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+            boardPage = boardRepository.findAll(pageable);
+        }
+
 
         return boardPage.stream()
                 .map(board -> new BoardResponseDto(

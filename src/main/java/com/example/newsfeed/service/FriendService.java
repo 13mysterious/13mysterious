@@ -3,13 +3,13 @@ package com.example.newsfeed.service;
 import com.example.newsfeed.dto.FriendResponseDto;
 import com.example.newsfeed.entity.Friend;
 import com.example.newsfeed.entity.User;
+import com.example.newsfeed.exception.CustomException;
+import com.example.newsfeed.exception.ErrorCode;
 import com.example.newsfeed.repository.FriendRepository;
 import com.example.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,10 +30,10 @@ public class FriendService {
     public void createFriendRequest(Long toUserId, Long fromUserId) {
 
         User findToUser = userRepository.findById(toUserId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND)
+                new CustomException(ErrorCode.USER_NOT_FOUND, "친구 요청을 보내려는 유저가 존재하지 않습니다.")
         );
         User findFromUser = userRepository.findById(fromUserId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND)
+                new CustomException(ErrorCode.USER_NOT_FOUND)
         );
 
         Friend friend = new Friend(false, findToUser, findFromUser);
@@ -49,7 +49,7 @@ public class FriendService {
     public List<FriendResponseDto> findAllFriends(Long id) {
 
         User findUser = userRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND)
+                new CustomException(ErrorCode.USER_NOT_FOUND)
         );
         List<Friend> findFriends = friendRepository.findByToUser(findUser);
 
@@ -59,18 +59,18 @@ public class FriendService {
     /**
      * 친구 수락 메서드. 본인의 친구창이 아닐 경우 예외 던짐
      *
-     * @param userId      현재 친구 목록을 가진 유저 식별자
+     * @param userId    현재 친구 목록을 가진 유저 식별자
      * @param sessionId 현재 로그인한 유저 식별자
      */
     @Transactional
     public void acceptFriend(Long friendId, Long userId, Long sessionId) {
 
         if (!userId.equals(sessionId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.INVALID_USER_NAME);
         }
 
         Friend findFriend = friendRepository.findById(friendId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                () -> new CustomException(ErrorCode.FRIEND_NOT_FOUND)
         );
 
         findFriend.changeIsAccepted(true);
@@ -79,18 +79,18 @@ public class FriendService {
     /**
      * 친구 삭제
      *
-     * @param friendId    삭제할 친구 식별자
-     * @param userId      현재 친구 목록을 가진 유저 식별자
+     * @param friendId  삭제할 친구 식별자
+     * @param userId    현재 친구 목록을 가진 유저 식별자
      * @param sessionId 현재 로그인한 유저 식별자
      */
     public void deleteFriend(Long friendId, Long userId, Long sessionId) {
 
         if (!userId.equals(sessionId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.INVALID_USER_NAME);
         }
 
         Friend findFriend = friendRepository.findById(friendId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                () -> new CustomException(ErrorCode.FRIEND_NOT_FOUND)
         );
 
         friendRepository.delete(findFriend);

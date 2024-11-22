@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -62,7 +64,13 @@ public class BoardController {
             @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(sessionId, page, size);
+
+        //게시물 조회
+        List<BoardResponseDto> allFriendsBoards = boardService.findAllFriendsBoards(sessionId, page - 1, size); // 페이지는 0부터 시작하므로 page - 1
+
+        if (allFriendsBoards.isEmpty()) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
 
         return new ResponseEntity<>(allFriendsBoards, HttpStatus.OK);
     }

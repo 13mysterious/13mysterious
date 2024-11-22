@@ -7,6 +7,8 @@ import com.example.newsfeed.entity.User;
 import com.example.newsfeed.exception.CustomException;
 import com.example.newsfeed.exception.ErrorCode;
 import com.example.newsfeed.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +78,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.INVALID_EMAIL);
         } else if(!passwordEncoder.matches(password,findUser.get().getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        } else if(findUser.get().getLeaveDate()!=null){
+            throw new CustomException(ErrorCode.INVALID_LEAVE_USER);
         }
 
         return new UserLoginResponseDto(findUser.get().getId(), findUser.get().getEmail());
@@ -159,7 +163,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public void leave(Long userId, String password) {
+    public void leave(Long userId, String password, HttpServletRequest request) {
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
@@ -172,6 +176,13 @@ public class UserServiceImpl implements UserService {
 
         // 탈퇴 날짜 저장
         findUser.leaveUser(LocalDate.now());
+
+        // 로그아웃 처리
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
     }
 
     /**

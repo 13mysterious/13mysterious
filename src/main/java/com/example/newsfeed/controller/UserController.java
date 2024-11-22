@@ -26,7 +26,10 @@ public class UserController {
      * @return 가입에 성공한 유저 정보
      */
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDto> signUp(@RequestBody @Valid UserSignUpRequestDto requestDto, BindingResult bindingResult) {
+    public ResponseEntity<UserResponseDto> signUp(
+            @Valid @RequestBody UserSignUpRequestDto requestDto,
+            BindingResult bindingResult
+    ) {
 
         if (bindingResult.hasErrors()) {
             ValidationUtils.bindErrorMessage(bindingResult);
@@ -101,8 +104,13 @@ public class UserController {
     @PatchMapping("/{userId}/leave")
     public ResponseEntity<UserResponseDto> leaveUserInfo(
             @PathVariable Long userId,
-            @RequestBody UserLeaveRequestDto requestDto
+            @Valid @RequestBody UserLeaveRequestDto requestDto,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            ValidationUtils.bindErrorMessage(bindingResult);
+        }
+
         userService.leave(userId, requestDto.getPassword());
 
         return new ResponseEntity<>(HttpStatus.OK);

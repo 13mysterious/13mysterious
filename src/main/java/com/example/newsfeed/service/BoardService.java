@@ -7,7 +7,6 @@ import com.example.newsfeed.entity.Comment;
 import com.example.newsfeed.entity.BoardLikes;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.exception.CustomException;
-import com.example.newsfeed.exception.ErrorCode;
 import com.example.newsfeed.repository.BoardRepository;
 import com.example.newsfeed.repository.FriendRepository;
 import com.example.newsfeed.repository.CommentRepository;
@@ -18,10 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -275,7 +272,7 @@ public class BoardService {
     //친구 게시물 목록 조회
     public List<BoardResponseDto> findAllFriendsBoards(Long sessionId, int page, int size) {
         //주어진 현재 사용자의ID(ssessionId)를 통해 친구 목록을 가져옴
-        List<Friend> friendIds = friendRepository.findByFromUser_Id(sessionId);
+        List<Friend> friendIds = friendRepository.findByFromUser_IdAndIsAcceptedTrue(sessionId);
 
         //친구 ID 글 목록 추출
         List<Long> friendsIds = friendIds.stream()

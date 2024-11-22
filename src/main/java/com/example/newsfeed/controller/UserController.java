@@ -1,5 +1,6 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.config.Const;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class UserController {
     public ResponseEntity<Void> updateUserPassword(
             @PathVariable Long userId,
             @RequestBody UserUpdatePasswordRequestDto requestDto,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
         userService.updateUserPassword(userId, requestDto.getOldPassword(), requestDto.getNewPassword(), sessionId);
 
@@ -65,7 +66,7 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateUserInfo(
             @PathVariable Long userId,
             @RequestBody UserUpdateInfoRequestDto requestDto,
-            @SessionAttribute(name = "userId") Long sessionId
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
         UserResponseDto userResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
 

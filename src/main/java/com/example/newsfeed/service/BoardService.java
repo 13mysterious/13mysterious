@@ -66,8 +66,8 @@ public class BoardService {
     //게시물 목록 조회
     public List<BoardResponseDto> findAllBoards(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
-        Page<Board> boardPage = boardRepository.findAll( pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+        Page<Board> boardPage = boardRepository.findAll(pageable);
 
         return boardPage.stream()
                 .map(board -> new BoardResponseDto(
@@ -229,7 +229,7 @@ public class BoardService {
         //주어진 userId를 통해 친구 목록을 가져옴
         List<Long> friendIds = friendRepository.findByFromUser_Id(sessionId);
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdAt")));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Board> friendBoardPage = boardRepository.findAllByUserIdIn(friendIds, pageable);
 
         return friendBoardPage.stream()

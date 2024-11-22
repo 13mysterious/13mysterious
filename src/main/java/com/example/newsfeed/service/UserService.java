@@ -18,5 +18,4 @@ public interface UserService {
 
     UserResponseDto findUserInfo(Long userId);
 
-    boolean validateEmail(String email);
 }

@@ -179,15 +179,4 @@ public class UserServiceImpl implements UserService {
                 findUser.getAge()
         );
     }
-
-    //이메일 정규식
-    private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-
-    @Override
-    public boolean validateEmail(String email) {
-        if (email == null || !Pattern.matches(EMAIL_REGEX, email)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다.");
-        }
-        return true;
-    }
 }

@@ -74,10 +74,11 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> updateComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
-            @RequestBody CommentRequestDto dto
+            @RequestBody CommentRequestDto dto,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
     ) {
 
-        CommentResponseDto commentResponseDto = commentService.updateComment(commentId, dto.getContents());
+        CommentResponseDto commentResponseDto = commentService.updateComment(commentId, boardId, sessionId, dto.getContents());
         return new ResponseEntity<>(commentResponseDto, HttpStatus.OK);
     }
 

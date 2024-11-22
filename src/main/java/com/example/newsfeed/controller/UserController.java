@@ -4,10 +4,12 @@ import com.example.newsfeed.config.Const;
 import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.*;
 import com.example.newsfeed.service.UserService;
+import com.example.newsfeed.util.ValidationUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +26,11 @@ public class UserController {
      * @return 가입에 성공한 유저 정보
      */
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDto> signUp(@RequestBody @Valid UserSignUpRequestDto requestDto) {
+    public ResponseEntity<UserResponseDto> signUp(@RequestBody @Valid UserSignUpRequestDto requestDto, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            ValidationUtils.bindErrorMessage(bindingResult);
+        }
 
         UserResponseDto userSignUpResponseDto =
                 userService.signUp(
@@ -48,9 +54,14 @@ public class UserController {
     @PatchMapping("/{userId}/password")
     public ResponseEntity<Void> updateUserPassword(
             @PathVariable Long userId,
-            @RequestBody UserUpdatePasswordRequestDto requestDto,
-            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
+            @Valid @RequestBody UserUpdatePasswordRequestDto requestDto,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            ValidationUtils.bindErrorMessage(bindingResult);
+        }
+
         userService.updateUserPassword(userId, requestDto.getOldPassword(), requestDto.getNewPassword(), sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -67,9 +78,14 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<UserResponseDto> updateUserInfo(
             @PathVariable Long userId,
-            @RequestBody UserUpdateInfoRequestDto requestDto,
-            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId
+            @Valid @RequestBody UserUpdateInfoRequestDto requestDto,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
+            BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            ValidationUtils.bindErrorMessage(bindingResult);
+        }
+
         UserResponseDto userResponseDto = userService.updateUserInfo(userId, requestDto.getName(), requestDto.getBirth(), requestDto.getAge(), sessionId);
 
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);

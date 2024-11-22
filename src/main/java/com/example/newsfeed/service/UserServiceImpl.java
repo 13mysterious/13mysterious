@@ -1,5 +1,6 @@
 package com.example.newsfeed.service;
 
+import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.UserLoginResponseDto;
 import com.example.newsfeed.dto.UserResponseDto;
 import com.example.newsfeed.entity.User;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 유저 가입 메서드
@@ -70,7 +72,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> findUser = userRepository.findUserByEmail(email);
 
         // 이메일이 다르거나 비밀번호가 다른 경우
-        if (findUser.isEmpty() || !password.equals(findUser.get().getPassword())) {
+        if (findUser.isEmpty() || !passwordEncoder.matches(password,findUser.get().getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 

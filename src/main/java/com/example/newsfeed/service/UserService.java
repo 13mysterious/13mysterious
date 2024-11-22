@@ -17,4 +17,6 @@ public interface UserService {
     void leave(Long userId, String password);
 
     UserResponseDto findUserInfo(Long userId);
+
+    boolean validateEmail(String email);
 }

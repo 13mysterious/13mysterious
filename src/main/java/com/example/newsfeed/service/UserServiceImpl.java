@@ -8,10 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -175,5 +178,16 @@ public class UserServiceImpl implements UserService {
                 findUser.getBirth(),
                 findUser.getAge()
         );
+    }
+
+    //이메일 정규식
+    private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
+    @Override
+    public boolean validateEmail(String email) {
+        if (email == null || !Pattern.matches(EMAIL_REGEX, email)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다.");
+        }
+        return true;
     }
 }

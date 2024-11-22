@@ -11,5 +11,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     List<Friend> findByToUser(User user);
 
-    List<Long> findByFromUser_Id(Long UserId);
+    List<Friend> findByFromUser_IdAndIsAcceptedTrue(Long userId);
+
 }

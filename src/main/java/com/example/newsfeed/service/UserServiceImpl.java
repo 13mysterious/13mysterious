@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 비밀번호가 일치하지 않는 경우
-        if (!findUser.getPassword().equals(oldPassword)) {
+        if (!passwordEncoder.matches(oldPassword,findUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.INVALID_INPUT_PASSWORD);
         }
 
-        findUser.updateUserPassword(newPassword);
+        findUser.updateUserPassword(passwordEncoder.encode(newPassword));
 
     }
 
@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
                 new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 비밀번호가 다를 경우
-        if (!findUser.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password,findUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 

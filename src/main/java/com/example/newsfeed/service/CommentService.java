@@ -11,9 +11,7 @@ import com.example.newsfeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -72,9 +70,9 @@ public class CommentService {
      * 댓글 수정
      *
      * @param commentId 댓글 식별자
-     * @param boardId 게시글 식별자
+     * @param boardId   게시글 식별자
      * @param sessionId 현재 로그인한 유저 식별자
-     * @param contents 수정할 내용
+     * @param contents  수정할 내용
      */
     @Transactional
     public CommentResponseDto updateComment(Long commentId, Long boardId, Long sessionId, String contents) {
@@ -103,7 +101,7 @@ public class CommentService {
      * 현재 로그인한 유저에게 해당 댓글의 수정/삭제 권한이 있는지 확인
      *
      * @param commentId 댓글 식별자
-     * @param boardId 게시글 식별자
+     * @param boardId   게시글 식별자
      * @param sessionId 현재 로그인한 유저 식별자
      * @return 권한이 있다면 찾은 Comment를 반환
      */

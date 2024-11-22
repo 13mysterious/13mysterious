@@ -32,6 +32,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto signUp(String name, String email, String password, LocalDate birth, int age) {
 
+        Optional<User> findUser = userRepository.findUserByEmail(email);
+
+        // 탈퇴한 유저일 경우
+        if (findUser.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         // 받아온 유저 정보를 변수에 저장
         User user = new User(name, email, password, birth, age);
 
@@ -74,7 +81,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param userId            수정 하고 싶은 유저 식별자
      * @param oldPassword       현재 비밀번호
-     * @param newPassword       새로운 비밀번호
+     * @param newPassword       새 비밀번호
      * @param sessionId         현재 로그인 중인 유저 식별자
      */
     @Transactional
@@ -93,6 +100,11 @@ public class UserServiceImpl implements UserService {
         // 비밀번호가 일치하지 않는 경우
         if (!findUser.getPassword().equals(oldPassword)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀 번호가 일치하지 않습니다.");
+        }
+
+        // 현재 비밀번호와 새 비밀번호가 같을 경우
+        if (oldPassword.equals(newPassword)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
         findUser.updateUserPassword(newPassword);

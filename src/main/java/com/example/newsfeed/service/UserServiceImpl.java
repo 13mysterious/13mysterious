@@ -37,8 +37,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> findUser = userRepository.findUserByEmail(email);
 
         // 탈퇴한 유저일 경우
-        if (findUser.isPresent()) {
+        if (findUser.isPresent() && findUser.get().getLeaveDate() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } else if (findUser.isPresent()) { // 동일한 이메일이 있는 경우
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다.");
         }
 
         // 받아온 유저 정보를 변수에 저장

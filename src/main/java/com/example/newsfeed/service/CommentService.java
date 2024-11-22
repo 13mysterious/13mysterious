@@ -30,9 +30,9 @@ public class CommentService {
     /**
      * 댓글 작성
      *
-     * @param boardId  게시글 식별자
-     * @param sessionId   댓글 작성자 식별자
-     * @param contents 내용
+     * @param boardId   게시글 식별자
+     * @param sessionId 댓글 작성자 식별자
+     * @param contents  내용
      * @return 작성된 댓글과 id dto
      */
     public CommentResponseDto createComment(Long boardId, Long sessionId, String contents) {
@@ -71,16 +71,15 @@ public class CommentService {
     /**
      * 댓글 수정
      *
-     * @param id       댓글 식별자
+     * @param commentId 댓글 식별자
+     * @param boardId 게시글 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
      * @param contents 수정할 내용
-     * @return 수정된 댓글
      */
     @Transactional
-    public CommentResponseDto updateComment(Long id, String contents) {
+    public CommentResponseDto updateComment(Long commentId, Long boardId, Long sessionId, String contents) {
 
-        Comment findComment = commentRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.COMMENT_NOT_FOUND)
-        );
+        Comment findComment = checkAuthorityForUpdateAndDel(commentId, boardId, sessionId);
 
         findComment.updateComment(contents);
         return new CommentResponseDto(findComment);
@@ -89,12 +88,26 @@ public class CommentService {
     /**
      * 댓글 삭제
      *
-     * @param commentId   댓글 식별자
-     * @param boardId     게시글 식별자
+     * @param commentId 댓글 식별자
+     * @param boardId   게시글 식별자
      * @param sessionId 현재 로그인한 유저 식별자
      */
+    @Transactional
     public void deleteComment(Long commentId, Long boardId, Long sessionId) {
 
+        Comment findComment = checkAuthorityForUpdateAndDel(commentId, boardId, sessionId);
+        commentRepository.delete(findComment);
+    }
+
+    /**
+     * 현재 로그인한 유저에게 해당 댓글의 수정/삭제 권한이 있는지 확인
+     *
+     * @param commentId 댓글 식별자
+     * @param boardId 게시글 식별자
+     * @param sessionId 현재 로그인한 유저 식별자
+     * @return 권한이 있다면 찾은 Comment를 반환
+     */
+    private Comment checkAuthorityForUpdateAndDel(Long commentId, Long boardId, Long sessionId) {
         Comment findComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CustomException(ErrorCode.COMMENT_NOT_FOUND)
         );
@@ -107,13 +120,13 @@ public class CommentService {
             throw new CustomException(ErrorCode.INVALID_USER_NAME);
         }
 
-        commentRepository.delete(findComment);
+        return findComment;
     }
 
     /**
      * 댓글 좋아요 생성
      *
-     * @param commentId   댓글 식별자
+     * @param commentId 댓글 식별자
      * @param sessionId 현재 로그인한 유저 식별자
      * @return 1, 좋아요 수 1 증가
      */
@@ -146,7 +159,7 @@ public class CommentService {
     /**
      * 좋아요 취소(삭제)
      *
-     * @param commentId   댓글 식별자
+     * @param commentId 댓글 식별자
      * @param sessionId 현재 로그인한 유저 식별자
      * @return -1, 좋아요 수 1 차감
      */

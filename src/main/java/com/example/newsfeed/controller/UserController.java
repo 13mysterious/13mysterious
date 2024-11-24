@@ -107,13 +107,14 @@ public class UserController {
             @PathVariable Long userId,
             @Valid @RequestBody UserLeaveRequestDto requestDto,
             HttpServletRequest request,
+            @SessionAttribute(name = Const.SESSION_KEY) Long sessionId,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
             ValidationUtils.bindErrorMessage(bindingResult);
         }
 
-        userService.leave(userId, requestDto.getPassword(), request);
+        userService.leave(userId, requestDto.getPassword(), request, sessionId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

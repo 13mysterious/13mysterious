@@ -12,6 +12,7 @@ import com.example.newsfeed.repository.FriendRepository;
 import com.example.newsfeed.repository.CommentRepository;
 import com.example.newsfeed.repository.LikesRepository;
 import com.example.newsfeed.repository.UserRepository;
+import com.example.newsfeed.util.HibernateFilterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +38,7 @@ public class BoardService {
     private final FriendRepository friendRepository;
     private final LikesRepository likesRepository;
     private final CommentRepository commentRepository;
-
+    private final HibernateFilterUtil hibernateFilterUtil;
     /**
      * 게시물 작성 메서드
      * @param title
@@ -75,7 +76,10 @@ public class BoardService {
      * @param end 기간별 조회 시 마지막 날짜
      * @return 게시물 리스트 출력
      */
+    @Transactional
     public List<BoardResponseDto> findAllBoards(String sortType, int page, int size,String start,String end) {
+
+        hibernateFilterUtil.enableActiveUserFilter();
 
         Pageable pageable;
         Page<Board> boardPage;
@@ -96,6 +100,7 @@ public class BoardService {
             boardPage = boardRepository.findAll(pageable);
         }
 
+        hibernateFilterUtil.disableActiveUserFilter();
 
         return boardPage.stream()
                 .map(board -> new BoardResponseDto(

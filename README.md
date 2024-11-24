@@ -26,7 +26,8 @@ https://documenter.getpostman.com/view/39379332/2sAYBUDsAF
  <br>
 
 ## ERD
-![뉴스피드ERD](https://github.com/user-attachments/assets/3cc7dba5-c949-43cc-968e-20beb76ffa95)
+![뉴스피드 ERD](https://github.com/user-attachments/assets/f75ce5de-3344-4328-b4c8-2b2807c40ae1)
+
 
 
 ## 개발 환경

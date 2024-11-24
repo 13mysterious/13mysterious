@@ -15,7 +15,7 @@ public interface UserService {
 
     UserResponseDto updateUserInfo(Long userId, String name, LocalDate birth, int age, Long sessionId);
 
-    void leave(Long userId, String password, HttpServletRequest request);
+    void leave(Long userId, String password, HttpServletRequest request, Long sessionId);
 
     UserResponseDto findUserInfo(Long userId);
 

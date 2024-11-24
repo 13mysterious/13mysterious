@@ -163,12 +163,17 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public void leave(Long userId, String password, HttpServletRequest request) {
+    public void leave(Long userId, String password, HttpServletRequest request, Long sessionId) {
+
+        // 로그인한 유저가 다른 유저 정보를 조회할 경우
+        if (userId != sessionId) {
+            throw new CustomException(ErrorCode.INVALID_SESSION_ID);
+        }
 
         // 유저 식별자로 유저 조회
         User findUser = userRepository.findById(userId).orElseThrow(() ->
                 new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        
         // 비밀번호가 다를 경우
         if (!passwordEncoder.matches(password,findUser.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);

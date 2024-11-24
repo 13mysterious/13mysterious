@@ -3,6 +3,9 @@ package com.example.newsfeed.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +14,18 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Table(name = "board")
-public class Board extends BaseEntity{
+@FilterDef(name = "activeUserFilter")
+@Filter(
+        name = "activeUserFilter",
+        condition = "exists (select 1 from user u where u.id = user_id and u.leave_date is null)")
+public class Board extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
-
 
     @Column(nullable = false, length = 50)
     private String title;
